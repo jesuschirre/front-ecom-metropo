@@ -135,6 +135,6 @@ export default function FormNuevoPr() {
           Crear producto
         </button>
       </form>
-    </div>
+    </div>  
   );
 }

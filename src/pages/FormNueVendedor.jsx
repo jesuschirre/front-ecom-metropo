@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Header from "../components/Header";
 import { useAuth } from "../context/AuthContext";
+import Footer from "../components/Footer";
 
 export default function FormNueVendedor() {
   const { usuario } = useAuth();
@@ -62,7 +63,6 @@ export default function FormNueVendedor() {
         comprobante_pago: null,
       });
 
-      // Opcional: limpiar input file manualmente si no se resetea
       e.target.reset();
     } catch (err) {
       console.error("Error al enviar solicitud:", err);
@@ -73,94 +73,102 @@ export default function FormNueVendedor() {
   return (
     <>
       <Header />
-      <div className="max-w-md mx-auto bg-white shadow-lg rounded-lg p-6">
-        <h2 className="text-2xl font-bold mb-4 text-center">Pago del Servicio</h2>
+      <div className="min-h-scree flex items-center justify-center py-8">
+        <div className="max-w-lg w-full bg-white shadow-2xl rounded-xl p-8 transform transition-all hover:shadow-3xl">
+          <h2 className="text-3xl font-extrabold text-center text-gray-800 mb-6">
+            Pago del Servicio
+          </h2>
 
-        {/* Instrucciones */}
-        <div className="bg-yellow-100 border-l-4 border-yellow-500 p-4 mb-4">
-          <p className="text-sm">
-            📲 Paga con <strong>Yape o Plin</strong> al número:{" "}
-            <span className="font-bold">987 654 321</span> o escanea el QR y sube
-            tu comprobante.
-          </p>
-          <img
-            src="/qr-yape.png"
-            alt="QR"
-            className="w-40 mx-auto mt-2 border rounded"
-          />
+          {/* Instrucciones */}
+          <div className="bg-blue-50 border-l-4 border-blue-500 p-5 mb-6 rounded-lg">
+            <p className="text-sm text-gray-700">
+              📲 Paga con <strong>Yape</strong> o <strong>Plin</strong> al número:{" "}
+              <span className="font-semibold text-blue-600">987 654 321</span> o escanea el QR y sube tu comprobante.
+            </p>
+            <img
+              src="/qr-yape.png"
+              alt="QR Code"
+              className="w-48 mx-auto mt-4 border-2 border-gray-200 rounded-lg shadow-sm"
+            />
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Método de pago */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Método de pago
+              </label>
+              <select
+                name="metodo_pago"
+                value={form.metodo_pago}
+                onChange={handleChange}
+                className="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+              >
+                <option value="yape">Yape</option>
+                <option value="plin">Plin</option>
+              </select>
+            </div>
+
+            {/* Monto */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Monto
+              </label>
+              <select
+                name="monto"
+                value={form.monto}
+                onChange={handleChange}
+                className="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+                required
+              >
+                <option value="">Selecciona un monto</option>
+                <option value="9.00">Básico - S/ 9.00</option>
+                <option value="19.00">Estándar - S/ 19.00</option>
+                <option value="29.00">Avanzado - S/ 29.00</option>
+              </select>
+            </div>
+
+            {/* Referencia */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Referencia de pago
+              </label>
+              <input
+                type="text"
+                name="referencia_pago"
+                value={form.referencia_pago}
+                onChange={handleChange}
+                className="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+                required
+              />
+            </div>
+
+            {/* Comprobante */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Subir comprobante
+              </label>
+              <input
+                type="file"
+                name="comprobante_pago"
+                accept="image/*"
+                onChange={handleChange}
+                className="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition duration-200"
+                required
+              />
+            </div>
+
+            {/* Botón */}
+            <button
+              type="submit"
+              className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200"
+            >
+              Enviar solicitud
+            </button>
+          </form>
         </div>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Método de pago */}
-          <div>
-            <label className="block text-sm font-medium mb-1">Método de pago</label>
-            <select
-              name="metodo_pago"
-              value={form.metodo_pago}
-              onChange={handleChange}
-              className="w-full border rounded px-3 py-2 focus:outline-none"
-            >
-              <option value="yape">Yape</option>
-              <option value="plin">Plin</option>
-            </select>
-          </div>
-
-          {/* Monto */}
-          <div>
-            <label className="block text-sm font-medium mb-1">Monto</label>
-            <select
-              name="monto"
-              value={form.monto}
-              onChange={handleChange}
-              className="w-full border rounded px-3 py-2"
-              required
-            >
-              <option value="">Selecciona un monto</option>
-              <option value="9.00">Básico - S/ 9.00</option>
-              <option value="19.00">Estándar - S/ 19.00</option>
-              <option value="29.00">Avanzado - S/ 29.00</option>
-            </select>
-          </div>
-
-          {/* Referencia */}
-          <div>
-            <label className="block text-sm font-medium mb-1">
-              Referencia de pago
-            </label>
-            <input
-              type="text"
-              name="referencia_pago"
-              value={form.referencia_pago}
-              onChange={handleChange}
-              className="w-full border rounded px-3 py-2"
-              required
-            />
-          </div>
-
-          {/* Comprobante */}
-          <div>
-            <label className="block text-sm font-medium mb-1">
-              Subir comprobante
-            </label>
-            <input
-              type="file"
-              name="comprobante_pago"
-              accept="image/*"
-              onChange={handleChange}
-              className="w-full border rounded px-3 py-2"
-              required
-            />
-          </div>
-
-          {/* Botón */}
-          <button
-            type="submit"
-            className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700"
-          >
-            Enviar solicitud
-          </button>
-        </form>
       </div>
+      <Footer/>
     </>
   );
 }

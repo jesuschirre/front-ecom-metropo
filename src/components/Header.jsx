@@ -126,7 +126,7 @@ export default function Header() {
   };
 
   return (
-    <header className="py-5 bg-gray-900 shadow-xl relative z-50">
+    <header className="py-5 bg-gray-900 shadow-xl relative z-50 text-white">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between">
           {/* Sección izquierda: Logo + Menú + Buscador */}
