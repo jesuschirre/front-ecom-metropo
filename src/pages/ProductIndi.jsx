@@ -3,7 +3,6 @@ import Footer from '../components/Footer';
 import { ShoppingCartIcon, ChatBubbleLeftRightIcon, StarIcon, BanknotesIcon, TruckIcon, CreditCardIcon } from '@heroicons/react/24/outline'; // Importing some example icons
 import { useState } from 'react';
 export default function ProductIndi() {
-  const [producto, setProducto] = useState[[]]
   const mainProduct = {
     name: 'Cámara Web Logitech Mx Brio Pro 700 Ultra Hd 4K Black',
     sku: '25000000055',

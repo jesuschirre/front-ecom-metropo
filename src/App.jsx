@@ -5,7 +5,7 @@ import Login from './pages/Login';
 import Registro from './pages/Registro';
 import FormNuevopr from './pages/FormNuevopr';
 import UserInfo from "./pages/UsuInfo";
-import Tienda from "./pages/tienda";
+import Tienda from "./pages/Tienda";
 import ProductIndi from "./pages/ProductIndi";
 import FormNueVendedor from "./pages/FormNueVendedor";
 function App() {

@@ -68,13 +68,13 @@ export default function Home() {
         )}
 
         {/* Product Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
           {productos.map((prod) => (
             <div
               key={prod.id}
-              className="bg-gray-800 rounded-2xl shadow-xl overflow-hidden transform transition-all duration-300 hover:scale-[1.03] hover:shadow-2xl hover:bg-gray-700/80 group"
+              className="shadow-xl overflow-hidden transform transition-all duration-300 hover:scale-[1.03] hover:shadow-2xl hover:bg-gray-700/80 group"
             >
-              <div className="relative overflow-hidden h-60">
+              <div className="relative overflow-hidden h-100">
                 <img
                   src={prod.imagen || 'https://via.placeholder.com/600x400?text=Sin+Imagen'}
                   alt={prod.nombre}
@@ -84,18 +84,18 @@ export default function Home() {
                   <span className="text-2xl font-bold text-white tracking-wide">${prod.precio.toFixed(2)}</span>
                 </div>
               </div>
-              <div className="p-5">
-                <h3 className="text-xl font-bold text-white mb-2 truncate">{prod.nombre}</h3>
-                <p className="text-sm text-gray-400 mb-4 line-clamp-2">{prod.descripcion || 'Sin descripción disponible.'}</p>
-                <div className="flex justify-between items-center mt-4">
-                  <span className="text-sm text-gray-500">
-                    Stock: <span className="font-mono text-gray-400">{prod.stock || 'N/A'}</span>
-                  </span>
-                  <button className="bg-cyan-500 text-gray-900 px-5 py-2 rounded-full text-sm font-semibold hover:bg-cyan-600 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:ring-offset-gray-900">
-                    Ver Detalles
-                  </button>
-                </div>
-              </div>
+                <div className="p-4 grid grid-cols-2 items-center gap-2">
+                {/* Nombre y descripción (columna izquierda) */}
+                  <div>
+                  <h3 className="text-lg font-bold text-white truncate">{prod.nombre}</h3>
+                  <h3 className="text-lg text-white truncate">{prod.descripcion}</h3>
+                        </div>
+
+                        {/* Precio (columna derecha) */}
+                        <p className="text-2xl font-bold text-white text-right">
+                          S/ {Number(prod.precio).toFixed(2)}
+                        </p>
+                  </div>
             </div>
           ))}
         </div>
@@ -113,7 +113,7 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
             {/* Plan Básico */}
-            <div className="bg-gray-800 rounded-3xl shadow-xl p-8 flex flex-col items-center border border-gray-700 hover:shadow-2xl transition duration-300 transform hover:-translate-y-2">
+            <div className="shadow-xl p-8 flex flex-col items-center border-1 border-white hover:shadow-2xl transition duration-300 transform hover:-translate-y-2">
               <h3 className="text-3xl font-bold text-gray-200 mb-2">Básico</h3>
               <p className="text-6xl font-extrabold text-white mb-6">S/9<span className="text-base font-normal text-gray-400">/mes</span></p>
               <ul className="space-y-4 text-gray-400 mb-8 text-left w-full max-w-sm">
@@ -121,13 +121,13 @@ export default function Home() {
                 <li className="flex items-center"><FaCheckCircle className="text-green-400 mr-3 flex-shrink-0" /> Promoción en la página web</li>
                 <li className="flex items-center"><FaCheckCircle className="text-green-400 mr-3 flex-shrink-0" /> 5 Anuncios al día en la radio</li>
               </ul>
-              <button disabled className="w-full bg-gray-700 text-gray-400 py-4 rounded-xl font-bold cursor-not-allowed opacity-70">
+               <Link to={"/FormNvend"} className="w-full bg-indigo-500 hover:bg-indigo-600 text-white py-4 rounded-xl font-bold transition duration-300 shadow-lg text-center">
                 Elegir plan
-              </button>
+              </Link>
             </div>
 
             {/* Plan Estándar (Destacado) */}
-            <div className="relative bg-gradient-to-br from-indigo-900 to-purple-900 rounded-3xl shadow-2xl p-10 flex flex-col items-center border-4 border-indigo-500 transform scale-[1.05]">
+            <div className="relative  shadow-2xl p-10 flex flex-col items-center border-2 scale-[1.05] transition duration-300 transform hover:-translate-y-2">
               <span className="absolute top-0 right-0 -mt-4 mr-4 bg-indigo-500 text-white text-xs font-bold px-4 py-2 rounded-full uppercase tracking-wide shadow-lg">Popular</span>
               <h3 className="text-3xl font-bold mb-2 text-indigo-200">Estándar</h3>
               <p className="text-7xl font-extrabold text-white mb-6">S/19<span className="text-lg font-normal text-indigo-300">/mes</span></p>
@@ -142,7 +142,7 @@ export default function Home() {
             </div>
 
             {/* Plan Avanzado */}
-            <div className="bg-gray-800 rounded-3xl shadow-xl p-8 flex flex-col items-center border border-gray-700 hover:shadow-2xl transition duration-300 transform hover:-translate-y-2">
+            <div className="shadow-xl p-8 flex flex-col items-center border-1 border-white hover:shadow-2xl transition duration-300 transform hover:-translate-y-2">
               <h3 className="text-3xl font-bold text-gray-200 mb-2">Avanzado</h3>
               <p className="text-6xl font-extrabold text-white mb-6">S/29<span className="text-base font-normal text-gray-400">/mes</span></p>
               <ul className="space-y-4 text-gray-400 mb-8 text-left w-full max-w-sm">
@@ -150,9 +150,9 @@ export default function Home() {
                 <li className="flex items-center"><FaCheckCircle className="text-green-400 mr-3 flex-shrink-0" /> Promoción total</li>
                 <li className="flex items-center"><FaCheckCircle className="text-green-400 mr-3 flex-shrink-0" /> 20 Anuncios al día en la radio</li>
               </ul>
-              <button disabled className="w-full bg-gray-700 text-gray-400 py-4 rounded-xl font-bold cursor-not-allowed opacity-70">
+              <Link to={"/FormNvend"} className="w-full bg-indigo-500 hover:bg-indigo-600 text-white py-4 rounded-xl font-bold transition duration-300 shadow-lg text-center">
                 Elegir plan
-              </button>
+              </Link>
             </div>
           </div>
         </div>

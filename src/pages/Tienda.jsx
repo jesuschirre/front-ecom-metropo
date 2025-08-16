@@ -68,13 +68,13 @@ export default function Tienda() {
       <div className="min-h-screen font-sans text-white bg-gray-950 pt-8">
         <main className="container mx-auto p-4 md:p-8 flex flex-col gap-6">
           
-          {/* Ordenar por (Barra arriba) */}
-          <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4 bg-black p-4 rounded-lg shadow-lg">
-            <div className="flex items-center space-x-4">
-              <label htmlFor="sort" className="font-semibold">Categorias</label>
+         {/* Ordenar por (Barra arriba) */}
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-black  rounded-lg shadow-lg">
+            <div className="flex justify-between items-center w-full">
+              <label htmlFor="sort" className="text-lg">Categorias</label>
               <select
                 id="sort"
-                className="p-2 border rounded bg-gray-800 text-white"
+                className="p-2 rounded bg-gray-800 text-white"
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
               >
@@ -88,16 +88,15 @@ export default function Tienda() {
 
           {/* Contenedor principal: filtros + productos */}
           <div className="flex flex-col md:flex-row gap-6">
-            
             {/* Sidebar filtros */}
-            <aside className="w-full md:w-1/4 bg-black rounded-lg shadow-lg mb-6 md:mb-0">
+            <aside className="w-full md:w-1/4 bg-black rounded-lg shadow-lg mb-6 md:mb-0 p-3 mx-1">
               {/* Categorías */}
-              <div className="border-b border-gray-700">
+              <div className=" border-gray-700">
                 <div
                   className="flex justify-between items-center px-2 py-2 cursor-pointer hover:bg-gray-800 transition-colors duration-50"
                   onClick={() => setIsCategoriesOpen(!isCategoriesOpen)}
                 >
-                  <span className="text-lg text-gray-200">Categorías</span>
+                  <span className="text-lg">Categorías</span>
                   <div className="text-gray-400 transition-transform duration-300 transform">
                     {isCategoriesOpen ? <FaChevronUp /> : <FaChevronDown />}
                   </div>
@@ -123,12 +122,12 @@ export default function Tienda() {
               </div>
 
               {/* Rango de Precio */}
-              <div className="border-b border-gray-700">
+              <div className="border-gray-700">
                 <div
-                  className="flex justify-between items-center px-4 py-4 cursor-pointer hover:bg-gray-800 transition-colors duration-200"
+                  className="flex justify-between items-center px-2 py-2 cursor-pointer hover:bg-gray-800 transition-colors duration-200"
                   onClick={() => setIsPriceOpen(!isPriceOpen)}
                 >
-                  <span className="text-lg font-medium text-gray-200">Precio</span>
+                  <span className="text-lg text-white">Precio</span>
                   <div className="text-gray-400 transition-transform duration-300 transform">
                     {isPriceOpen ? <FaChevronUp /> : <FaChevronDown />}
                   </div>
@@ -164,26 +163,33 @@ export default function Tienda() {
             {/* Lista de productos */}
             <section className="w-full md:w-3/4">
               {/* Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3  gap-10">
                 {currentProducts.length > 0 ? (
                   currentProducts.map(product => (
                     <Link
                       key={product.id}
                       to={`/product/${product.id}`}
-                      className="bg-gray-800 rounded-lg shadow-lg overflow-hidden transform transition duration-300 hover:scale-105 hover:shadow-xl block"
+                      className="shadow-lg overflow-hidden transform transition duration-300 hover:scale-105 hover:shadow-xl block"
                     >
                       <img
                         src={product.imagen}
                         alt={product.nombre}
-                        className="w-full h-48 object-cover"
+                        className="w-full h-78 object-cover"
                         onError={(e) => { e.target.src = "https://placehold.co/300x300/CCCCCC/FFFFFF?text=Imagen+no+disponible"; }}
                       />
-                      <div className="p-4 text-center">
-                        <h3 className="text-lg font-semibold text-white truncate">{product.nombre}</h3>
-                        <p className="mt-2 text-2xl font-extrabold text-blue-400">
-                          ${Number(product.precio).toFixed(2)}
+                      <div className="p-4 grid grid-cols-2 items-center gap-2">
+                        {/* Nombre y descripción (columna izquierda) */}
+                        <div>
+                          <h3 className="text-lg font-bold text-white truncate">{product.nombre}</h3>
+                          <h3 className="text-lg text-white truncate">{product.descripcion}</h3>
+                        </div>
+
+                        {/* Precio (columna derecha) */}
+                        <p className="text-2xl font-bold text-white text-right">
+                          S/ {Number(product.precio).toFixed(2)}
                         </p>
                       </div>
+
                     </Link>
                   ))
                 ) : (
