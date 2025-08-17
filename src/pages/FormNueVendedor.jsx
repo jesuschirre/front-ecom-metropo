@@ -73,15 +73,15 @@ export default function FormNueVendedor() {
   return (
     <>
       <Header />
-      <div className="min-h-scree flex items-center justify-center py-8">
-        <div className="max-w-lg w-full bg-white shadow-2xl rounded-xl p-8 transform transition-all hover:shadow-3xl">
-          <h2 className="text-3xl font-extrabold text-center text-gray-800 mb-6">
+      <div className="min-h-scree flex items-center justify-center py-8 bg-black">
+        <div className="max-w-lg w-full  shadow-2xl rounded-xl p-8 transform transition-all hover:shadow-3xl">
+          <h2 className="text-3xl font-extrabold text-center text-white ">
             Pago del Servicio
           </h2>
 
           {/* Instrucciones */}
-          <div className="bg-blue-50 border-l-4 border-blue-500 p-5 mb-6 rounded-lg">
-            <p className="text-sm text-gray-700">
+          <div className=" border-l-4  p-5 mb-6 rounded-lg">
+            <p className="text-sm text-white">
               📲 Paga con <strong>Yape</strong> o <strong>Plin</strong> al número:{" "}
               <span className="font-semibold text-blue-600">987 654 321</span> o escanea el QR y sube tu comprobante.
             </p>
@@ -95,7 +95,7 @@ export default function FormNueVendedor() {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Método de pago */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-white mb-2">
                 Método de pago
               </label>
               <select
@@ -111,7 +111,7 @@ export default function FormNueVendedor() {
 
             {/* Monto */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-white mb-2">
                 Monto
               </label>
               <select
@@ -130,7 +130,7 @@ export default function FormNueVendedor() {
 
             {/* Referencia */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-white mb-2">
                 Referencia de pago
               </label>
               <input
@@ -145,7 +145,7 @@ export default function FormNueVendedor() {
 
             {/* Comprobante */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-white mb-2">
                 Subir comprobante
               </label>
               <input

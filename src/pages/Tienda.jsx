@@ -65,11 +65,11 @@ export default function Tienda() {
   return (
     <>
      <Header />
-      <div className="min-h-screen font-sans text-white bg-gray-950 pt-8">
+      <div className="min-h-screen font-sans text-white bg-black pt-8">
         <main className="container mx-auto p-4 md:p-8 flex flex-col gap-6">
           
          {/* Ordenar por (Barra arriba) */}
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-black  rounded-lg shadow-lg">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 rounded-lg shadow-lg">
             <div className="flex justify-between items-center w-full">
               <label htmlFor="sort" className="text-lg">Categorias</label>
               <select
