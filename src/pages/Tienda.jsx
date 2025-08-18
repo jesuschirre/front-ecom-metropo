@@ -5,8 +5,7 @@ import Footer from '../components/Footer';
 import { Link } from 'react-router-dom';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 
-export default function Tienda() {
-
+export default function Tienda() { 
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState(['Todo']);
   const [searchTerm, setSearchTerm] = useState('');

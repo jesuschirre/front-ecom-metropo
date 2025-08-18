@@ -18,7 +18,7 @@ function App() {
         <Route path='/FormNuevopr' element={<FormNuevopr/>}/>
         <Route path="/Userinfo" element={<UserInfo/>}/>
         <Route path="/Tienda" element={<Tienda/>}/>
-        <Route path="/Product" element={<ProductIndi/>}/>
+        <Route path="/Product/:id" element={<ProductIndi />} />
         <Route path="/FormNvend" element={<FormNueVendedor/>}/>
       </Routes>
     </AuthProvider>
