@@ -1,18 +1,39 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import { useAuth } from "../context/AuthContext";
 import Footer from "../components/Footer";
 
 export default function FormNueVendedor() {
   const { usuario } = useAuth();
-  console.log("Datos del usuario logueado:", usuario);
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // 1. Recibimos el plan seleccionado desde la página anterior
+  const planSeleccionado = location.state?.plan;
 
   const [form, setForm] = useState({
     metodo_pago: "yape",
-    monto: "",
+    monto: "", // Se llenará automáticamente
     referencia_pago: "",
     comprobante_pago: null,
   });
+
+  // 2. Nuevos estados para una UX profesional (loading y mensajes)
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState({ text: '', type: '' });
+
+  // 3. Efecto para rellenar el monto y manejar si el usuario llega aquí por error
+  useEffect(() => {
+    if (planSeleccionado && planSeleccionado.precio) {
+      // Rellenamos el monto automáticamente con el precio del plan
+      setForm(prevForm => ({ ...prevForm, monto: planSeleccionado.precio }));
+    } else {
+      // Si no hay plan seleccionado, es un error. Redirigimos al perfil.
+      console.warn("Acceso a FormNueVendedor sin un plan. Redirigiendo...");
+      navigate('/UsuInfo');
+    }
+  }, [planSeleccionado, navigate]);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -23,15 +44,17 @@ export default function FormNueVendedor() {
     }
   };
 
+  // 4. Lógica de envío completamente renovada
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setMessage({ text: '', type: '' });
 
     if (!usuario || !usuario.id) {
-      alert("No hay usuario logueado");
+      setMessage({ text: "Error de autenticación. Por favor, inicia sesión de nuevo.", type: 'error' });
+      setLoading(false);
       return;
     }
-
-    const token = localStorage.getItem("token");
 
     const formData = new FormData();
     formData.append("usuario_id", usuario.id);
@@ -39,131 +62,89 @@ export default function FormNueVendedor() {
     formData.append("monto", form.monto);
     formData.append("referencia_pago", form.referencia_pago);
     formData.append("comprobante_pago", form.comprobante_pago);
+    formData.append("plan_nombre", planSeleccionado.nombre); // Enviamos el nombre del plan para el email
 
     try {
-      const res = await fetch(
-        "http://localhost:3000/solicitudes/solicitar-vendedor",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          body: formData,
-        }
-      );
-
-      const data = await res.json();
-
-      alert(data.message || "Solicitud enviada correctamente");
-
-      setForm({
-        metodo_pago: "yape",
-        monto: "",
-        referencia_pago: "",
-        comprobante_pago: null,
+      const res = await fetch("http://localhost:3000/solicitudes/solicitar-vendedor", {
+        method: "POST",
+        body: formData,
       });
 
-      e.target.reset();
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Error al enviar la solicitud.");
+
+      // ÉXITO: Mostramos el mensaje y preparamos la redirección
+      setMessage({ text: data.message, type: 'success' });
+      
+      // La pantalla ya no se queda "en blanco" o con datos. Se limpia y redirige.
+      setTimeout(() => {
+        navigate('/Userinfo'); // Redirigir al perfil después de 3 segundos
+      }, 3500);
+
     } catch (err) {
-      console.error("Error al enviar solicitud:", err);
-      alert("Hubo un error al enviar la solicitud");
+      setMessage({ text: err.message, type: 'error' });
+    } finally {
+      setLoading(false);
     }
   };
+
+  // Mientras se procesa la redirección inicial, mostramos un loader
+  if (!planSeleccionado) {
+    return <div className="min-h-screen bg-black flex items-center justify-center"><p className="text-white">Cargando...</p></div>;
+  }
 
   return (
     <>
       <Header />
-      <div className="min-h-scree flex items-center justify-center py-8 bg-black">
-        <div className="max-w-lg w-full  shadow-2xl rounded-xl p-8 transform transition-all hover:shadow-3xl">
+      <div className="min-h-screen flex items-center justify-center py-8 bg-black">
+        <div className="max-w-lg w-full bg-gray-900 shadow-2xl rounded-xl p-8 transform transition-all">
           <h2 className="text-3xl font-extrabold text-center text-white ">
-            Pago del Servicio
+            Pago del Plan "{planSeleccionado.nombre}"
           </h2>
 
-          {/* Instrucciones */}
-          <div className=" border-l-4  p-5 mb-6 rounded-lg">
-            <p className="text-sm text-white">
+          <div className="border-l-4 border-blue-500 p-5 my-6 rounded-lg bg-gray-800">
+            <p className="text-sm text-gray-300">
               📲 Paga con <strong>Yape</strong> o <strong>Plin</strong> al número:{" "}
-              <span className="font-semibold text-blue-600">987 654 321</span> o escanea el QR y sube tu comprobante.
+              <span className="font-semibold text-blue-400">987 654 321</span> o escanea el QR y sube tu comprobante.
             </p>
-            <img
-              src="/qr-yape.png"
-              alt="QR Code"
-              className="w-48 mx-auto mt-4 border-2 border-gray-200 rounded-lg shadow-sm"
-            />
+            <img src="/qr-yape.png" alt="QR Code" className="w-48 mx-auto mt-4 border-2 border-gray-700 rounded-lg" />
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Método de pago */}
+            {/* 5. Componente de mensajes que reemplaza al alert() */}
+            {message.text && (
+              <div className={`p-4 text-sm rounded-lg text-center ${message.type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                {message.text}
+              </div>
+            )}
+
             <div>
-              <label className="block text-sm font-medium text-white mb-2">
-                Método de pago
-              </label>
-              <select
-                name="metodo_pago"
-                value={form.metodo_pago}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
-              >
+              <label className="block text-sm font-medium text-white mb-2">Método de pago</label>
+              <select name="metodo_pago" value={form.metodo_pago} onChange={handleChange} className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500" disabled={loading}>
                 <option value="yape">Yape</option>
                 <option value="plin">Plin</option>
               </select>
             </div>
 
-            {/* Monto */}
+            {/* 6. El campo Monto ahora es un input deshabilitado */}
             <div>
-              <label className="block text-sm font-medium text-white mb-2">
-                Monto
-              </label>
-              <select
-                name="monto"
-                value={form.monto}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
-                required
-              >
-                <option value="">Selecciona un monto</option>
-                <option value="9.00">Básico - S/ 9.00</option>
-                <option value="19.00">Estándar - S/ 19.00</option>
-                <option value="29.00">Avanzado - S/ 29.00</option>
-              </select>
+              <label className="block text-sm font-medium text-white mb-2">Monto a Pagar</label>
+              <input type="text" name="monto" value={`S/ ${Number(form.monto).toFixed(2)}`} className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white cursor-not-allowed" readOnly />
             </div>
 
-            {/* Referencia */}
             <div>
-              <label className="block text-sm font-medium text-white mb-2">
-                Referencia de pago
-              </label>
-              <input
-                type="text"
-                name="referencia_pago"
-                value={form.referencia_pago}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
-                required
-              />
+              <label className="block text-sm font-medium text-white mb-2">Referencia de pago</label>
+              <input type="text" name="referencia_pago" value={form.referencia_pago} onChange={handleChange} className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500" required disabled={loading} />
             </div>
 
-            {/* Comprobante */}
             <div>
-              <label className="block text-sm font-medium text-white mb-2">
-                Subir comprobante
-              </label>
-              <input
-                type="file"
-                name="comprobante_pago"
-                accept="image/*"
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition duration-200"
-                required
-              />
+              <label className="block text-sm font-medium text-white mb-2">Subir comprobante</label>
+              <input type="file" name="comprobante_pago" accept="image/*" onChange={handleChange} className="w-full text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700" required disabled={loading} />
             </div>
 
-            {/* Botón */}
-            <button
-              type="submit"
-              className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200"
-            >
-              Enviar solicitud
+            {/* 7. El botón ahora muestra el estado de carga */}
+            <button type="submit" className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-wait" disabled={loading}>
+              {loading ? 'Enviando Solicitud...' : 'Enviar Solicitud'}
             </button>
           </form>
         </div>
