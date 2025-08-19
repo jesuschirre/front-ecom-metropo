@@ -20,6 +20,7 @@ export default function Tienda() {
   const [isCategoriesOpen, setIsCategoriesOpen] = useState(true);
   const [isPriceOpen, setIsPriceOpen] = useState(true);
 
+  console.log(products)
   // Cargar productos y categorías desde el backend
   useEffect(() => {
     const fetchData = async () => {
