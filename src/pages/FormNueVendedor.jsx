@@ -88,7 +88,7 @@ export default function FormNueVendedor() {
     }
   };
 
-  // Mientras se procesa la redirección inicial, mostramos un loader
+  // Mientras se procesa la redirección inicial, msostramos un loader
   if (!planSeleccionado) {
     return <div className="min-h-screen bg-black flex items-center justify-center"><p className="text-white">Cargando...</p></div>;
   }
