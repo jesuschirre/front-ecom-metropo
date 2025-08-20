@@ -8,6 +8,9 @@ import UserInfo from "./pages/UsuInfo";
 import Tienda from "./pages/Tienda";
 import ProductIndi from "./pages/ProductIndi";
 import FormNueVendedor from "./pages/FormNueVendedor";
+import DashboardLayout from "./pages/DashboardLayout";
+import DashboardHome from "./pages/dashboard/DashboardHome";
+import Perfil from "./pages/dashboard/Perfil";
 function App() {
   return (
     <AuthProvider>
@@ -16,10 +19,19 @@ function App() {
         <Route path='/login' element={<Login/>}/>
         <Route path='/registro' element={<Registro/>}/>
         <Route path='/FormNuevopr' element={<FormNuevopr/>}/>
-        <Route path="/Userinfo" element={<UserInfo/>}/>
         <Route path="/Tienda" element={<Tienda/>}/>
         <Route path="/Product/:id" element={<ProductIndi />} />
         <Route path="/FormNvend" element={<FormNueVendedor/>}/>
+
+        {/* Ruta padre para el dashboard */}
+        <Route path="/dashboard" element={<DashboardLayout />}>
+            {/* Aquí van las rutas hijas del dashboard */}
+          <Route index element={<DashboardHome />} />  {/* /dashboard */}
+            {/* Agrega más rutas de panel aquí */}
+          <Route path="Perfil" element={<Perfil/>}/>
+          <></>
+        </Route>
+
       </Routes>
     </AuthProvider>
   );

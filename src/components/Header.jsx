@@ -135,7 +135,7 @@ export default function Header() {
             <a href="/" className="flex items-center space-x-3">
               <img
                 className="h-10 md:h-12 w-auto"
-                src="https://upload.wikimedia.org/wikipedia/commons/5/53/Wikimedia-logo.png"
+                src="/img/logo1.png"
                 alt="Logo tienda"
               />
               <span className="text-3xl font-extrabold text-white tracking-wider">
@@ -209,7 +209,7 @@ export default function Header() {
               <div className="flex items-center gap-4">
                 {usuario ? (
                   <>
-                    <Link to="/Userinfo"><span>Hola, <b>{usuario.nombre}</b></span></Link>
+                    <Link to="/dashboard"><span>Hola, <b>{usuario.nombre}</b></span></Link>
                     <button 
                       onClick={logout} 
                       className="bg-red-600 px-3 py-1 rounded hover:bg-red-700"
