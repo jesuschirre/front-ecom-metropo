@@ -11,6 +11,7 @@ import FormNueVendedor from "./pages/FormNueVendedor";
 import DashboardLayout from "./pages/DashboardLayout";
 import DashboardHome from "./pages/dashboard/DashboardHome";
 import Perfil from "./pages/dashboard/Perfil";
+import Productos from "./pages/dashboard/Productos";
 function App() {
   return (
     <AuthProvider>
@@ -29,7 +30,7 @@ function App() {
           <Route index element={<DashboardHome />} />  {/* /dashboard */}
             {/* Agrega más rutas de panel aquí */}
           <Route path="Perfil" element={<Perfil/>}/>
-          <></>
+          <Route path="Productos" element={<Productos/>}/>
         </Route>
 
       </Routes>
