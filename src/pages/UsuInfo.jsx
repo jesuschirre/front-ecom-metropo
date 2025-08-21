@@ -8,7 +8,9 @@ import Footer from "../components/Footer";
 export default function UsuInfo() {
   const [usuario, setUsuario] = useState({ id: "", nombre: "", correo: "", rol: "" });
   const [vendedorInfo, setVendedorInfo] = useState(null);
+  const [vendedorProd, setVendedorProd] = useState (null);
   
+  console.log(vendedorProd)
   // --- NUEVOS ESTADOS PARA MANEJAR LOS PLANES DINÁMICAMENTE ---
   const [planes, setPlanes] = useState([]);
   const [loadingPlanes, setLoadingPlanes] = useState(true);
@@ -16,7 +18,6 @@ export default function UsuInfo() {
   // --- USEEFFECT ACTUALIZADO PARA CARGAR DATOS DE USUARIO Y PLANES ---
   useEffect(() => {
     const token = localStorage.getItem("token");
-
     // 1. Cargar el perfil del usuario
     fetch("http://localhost:3000/users/perfil", {
       headers: { "Authorization": `Bearer ${token}` }
@@ -49,7 +50,16 @@ export default function UsuInfo() {
       .finally(() => {
         setLoadingPlanes(false); // Quitar el estado de carga al finalizar, tanto si hay éxito como si hay error
       });
-      
+
+      fetch("http://localhost:3000/productos/mis-productos", {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}` // 👈 lo importante
+        }
+      })
+        .then(res => res.json())
+        .then(data => setVendedorProd(data))
+        .catch(err => console.error(err));
   }, []); // El array vacío asegura que esto se ejecute solo una vez al montar el componente
 
   // --- FUNCIONES HANDLER (SIN CAMBIOS) ---
@@ -181,6 +191,7 @@ export default function UsuInfo() {
           </div>
           
           {usuario.rol === "vendedor" && vendedorInfo && (
+          <>
             <div className="bg-white rounded-3xl shadow-2xl p-8 lg:p-12">
               <h2 className="text-3xl font-extrabold text-gray-900 mb-2">Información de tu Tienda</h2>
               <p className="text-gray-500 text-lg mb-8">Actualiza los detalles de tu tienda y logo.</p>
@@ -222,6 +233,53 @@ export default function UsuInfo() {
                 </div>
               </form>
             </div>
+            <div className="p-6">
+              <h2 className="text-xl font-bold mb-4">Mis Productos</h2>
+              <div className="space-y-4">
+                {vendedorProd.map((prod) => (
+                  <div
+                    key={prod.id}
+                    className="grid grid-cols-5 gap-2 items-center bg-gray-100 p-3 rounded-lg shadow"
+                  >
+                    <input
+                      type="text"
+                      defaultValue={prod.nombre}
+                      className="border p-2 rounded w-full"
+                    />
+                    <input
+                      type="text"
+                      defaultValue={prod.descripcion}
+                      className="border p-2 rounded w-full"
+                    />
+                    <input
+                      type="text"
+                      defaultValue={prod.precio}
+                      className="border p-2 rounded w-full"
+                    />
+                    <input
+                      type="text"
+                      defaultValue={prod.imagen}
+                      className="border p-2 rounded w-full"
+                    />
+                    <input
+                      type="text"
+                      defaultValue={prod.categoria_nombre}
+                      className="border p-2 rounded w-full"
+                    />
+                    <div className="flex gap-2">
+                      <button className="bg-blue-500 text-white px-3 py-1 rounded">
+                        Editar
+                      </button>
+                      <button className="bg-red-500 text-white px-3 py-1 rounded">
+                        Eliminar
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+              
+          </>
           )}
 
           {/* --- SECCIÓN 'CONVIÉRTETE EN VENDEDOR' (AHORA DINÁMICA) --- */}
