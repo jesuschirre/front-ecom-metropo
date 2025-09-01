@@ -4,7 +4,7 @@ export default function Footer() {
       <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* Logo y descripción */}
         <div>
-          <h2 className="text-2xl font-bold text-white">LEDERES</h2>
+          <h2 className="text-2xl font-bold text-white">METROPOLI</h2>
           <p className="mt-4 text-gray-400">
             Tu tienda de confianza para artículos únicos del mundo fantástico.
           </p>

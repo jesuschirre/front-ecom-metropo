@@ -215,6 +215,13 @@ export default function Perfil() {
                     <input id="logo" type="text" name="logo" value={vendedorInfo.logo} onChange={(e) => setVendedorInfo({ ...vendedorInfo, logo: e.target.value })} placeholder="URL del logo" className="block w-full pl-10 pr-3 py-2 bg-[#161616] text-[#8A8AA0] rounded-xl border-gray-300 focus:ring-blue-500 focus:border-blue-500 transition duration-200" />
                   </div>
                 </div>
+                <div className="lg:col-span-3">
+                  <label className="block text-sm font-semibold mb-1">banner URL</label>
+                  <div className="mt-3 relative rounded-md shadow-sm">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><FaInfoCircle className="h-5 w-5 text-gray-400" /></div>
+                    <input id="banner" type="text" name="banner" value={vendedorInfo.banner} onChange={(e) => setVendedorInfo({ ...vendedorInfo, banner: e.target.value })} placeholder="URL del logo" className="block w-full pl-10 pr-3 py-2 bg-[#161616] text-[#8A8AA0] rounded-xl border-gray-300 focus:ring-blue-500 focus:border-blue-500 transition duration-200" />
+                  </div>
+                </div>
                 <div className="md:col-span-2 lg:col-span-3">
                   <label className="block text-sm font-semibold mb-1">Descripción</label>
                   <div className="mt-3"><textarea id="descripcion" name="descripcion" value={vendedorInfo.descripcion} onChange={(e) => setVendedorInfo({ ...vendedorInfo, descripcion: e.target.value })} placeholder="Descripción de tu tienda" rows="4" className="block w-full pl-6 pr-3 py-3 bg-[#161616] text-[#8A8AA0] rounded-xl border-gray-300 focus:ring-blue-500 focus:border-blue-500 transition duration-200"></textarea></div>
@@ -225,9 +232,17 @@ export default function Perfil() {
                     </div>
                   )}
                 </div>
+                <div className="md:col-span-2 lg:col-span-3">
+                  {vendedorInfo.banner && (
+                    <div className="mt-6 text-center">
+                      <h4 className="text-gray-700 font-semibold mb-2">Previsualización del banner</h4>
+                      <img src={vendedorInfo.banner} alt="Logo de la tienda" className="mx-auto w-32 h-32 object-contain rounded-full shadow-lg border-4 border-gray-100" />
+                    </div>
+                  )}
+                </div>
+
                 <div className="md:col-span-2 lg:col-span-3 flex flex-col sm:flex-row gap-4 mt-6">
-                  <button type="submit" className="flex-1 w-full sm:w-auto bg-emerald-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-emerald-700 transition duration-200 shadow-md">Guardar Cambios de Vendedor</button>
-                  <Link to="/FormNuevopr" className="flex-1 w-full sm:w-auto text-center bg-amber-400 text-white py-3 rounded-xl font-bold hover:bg-amber-600 transition duration-200 shadow-md">Crear Nuevo Producto</Link>
+                  <button type="submit" className="flex-1 w-full sm:w-auto bg-emerald-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-emerald-700 transition duration-200 shadow-md cursor-pointer">Guardar Cambios de Vendedor</button>
                 </div>
               </form>
             </div>
@@ -236,33 +251,31 @@ export default function Perfil() {
           {/* --- SECCIÓN 'CONVIÉRTETE EN VENDEDOR' (AHORA DINÁMICA) --- */}
           {usuario.rol === "usuario" && (
             <div className="rounded-3xl p-8 lg:p-12 text-center">
-              <h2 className="text-4xl font-extrabold text-gray-900 mb-4 tracking-tight">
-                Conviértete en Vendedor 🚀
+              <h2 className="from-pink-400 to-purple-500 text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r mb-4 tracking-tight">
+                Conviértete en Vendedor
               </h2>
-              <p className="text-lg text-gray-600 mb-10">Elige un plan para empezar a vender tus productos.</p>
+              <p className="text-lg  mb-10">Elige un plan para empezar a vender tus productos.</p>
               
               {loadingPlanes ? (
                 <p className="text-gray-500 text-lg">Cargando planes...</p>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
                   {/* AQUÍ COMIENZA EL RENDERIZADO DINÁMICO DE LOS PLANES */}
                   {planes.map((plan) => (
                     <div 
                       key={plan.id}
                       className={`
-                        bg-gray-50 rounded-2xl shadow-xl p-8 flex flex-col items-center border hover:shadow-2xl transition duration-300 transform hover:-translate-y-1
-                        ${plan.destacado ? 'relative bg-white border-4 border-blue-500 scale-105' : 'border-gray-200'}
-                      `}
+                        relative shadow-2xl p-10 flex flex-col items-center border-2 scale-[1.05] transition duration-300 transform hover:-translate-y-2`}
                     >
                       {plan.destacado ? (
-                        <span className="absolute top-0 right-0 -mt-4 mr-4 bg-blue-500 text-white text-xs font-bold px-4 py-2 rounded-full uppercase shadow-lg">Popular</span>
+                        <span className="absolute top-0 right-0 -mt-4 mr-4 bg-indigo-500 text-white text-xs font-bold px-4 py-2 rounded-full uppercase tracking-wide shadow-lg">Popular</span>
                       ) : null}
-                      <h3 className={`font-bold mb-2 ${plan.destacado ? 'text-3xl text-blue-600' : 'text-2xl text-gray-800'}`}>{plan.nombre}</h3>
-                      <p className={`font-extrabold text-gray-900 mb-4 ${plan.destacado ? 'text-7xl' : 'text-6xl'}`}>
+                      <h3 className={`font-bold mb-2 ${plan.destacado ? 'text-3xl text-indigo-200' : 'text-2xl text-white'}`}>{plan.nombre}</h3>
+                      <p className={`font-extrabold text-white mb-4 ${plan.destacado ? 'text-7xl' : 'text-6xl'}`}>
                         S/{Number(plan.precio).toFixed(0)}
                         <span className="text-base font-normal text-gray-500">{plan.periodo}</span>
                       </p>
-                      <ul className="space-y-3 text-gray-600 mb-8 text-left w-full">
+                      <ul className="space-y-3 text-indigo-200 mb-8 text-left w-full">
                         {plan.caracteristicas.map((feature, index) => (
                           <li key={index} className="flex items-center">
                             <FaCheckCircle className="text-green-500 mr-2 flex-shrink-0" /> {feature}
@@ -279,7 +292,7 @@ export default function Perfil() {
                           <Link 
                             to={plan.url_contratacion} 
                             state={{ plan: plan }} // <-- AÑADIMOS ESTO PARA PASAR EL OBJETO DEL PLAN
-                            className="block w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl font-bold transition duration-200 shadow-lg text-center">
+                            className="block w-full bg-indigo-500 hover:bg-indigo-600 text-white py-4 rounded-xl font-bold transition duration-200 shadow-lg text-center">
                             Elegir plan
                           </Link>
                         )}

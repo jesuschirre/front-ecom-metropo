@@ -9,10 +9,32 @@ export default function Home() {
   const [productos, setProductos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [usuario, setUsuario] = useState([]);
 
-  const URL = "http://localhost:3000/productos"; // Nueva ruta del backend
+
+  const URL = "http://localhost:3000/productos"; // ruta de backend
+  
+  // --- NUEVOS ESTADOS PARA MANEJAR LOS PLANES DINÁMICAMENTE ---
+  const [planes, setPlanes] = useState([]);
+  const [loadingPlanes, setLoadingPlanes] = useState(true);
 
   useEffect(() => {
+
+    const token = localStorage.getItem("token");
+
+    // Cargar el perfil del usuario para los planes 
+    fetch("http://localhost:3000/users/perfil", {
+      headers: { "Authorization": `Bearer ${token}` }
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data && data.id) { // Verificación para asegurar que los datos son válidos
+        setUsuario(data);
+      }
+    })
+    .catch(err => console.error("Error al cargar perfil:", err));
+    
+    //trayendo productos del backend
     const fetchProductos = async () => {
       try {
         setLoading(true);
@@ -35,12 +57,30 @@ export default function Home() {
       }
     };
 
+    // Cargar los planes de precios del backend
+    fetch("http://localhost:3000/api/planes")
+      .then(res => res.json())
+      .then(data => {
+        setPlanes(data);
+      })
+      .catch(err => {
+        console.error("Error al cargar planes:", err);
+      })
+      .finally(() => {
+        setLoadingPlanes(false); // Quitar el estado de carga al finalizar, tanto si hay éxito como si hay error
+      });
+
+
     fetchProductos();
   }, []);
+  
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white font-sans">
+    <>
+    
       <Header />
+    <div className="min-h-screen bg-gray-950 text-white font-sans mt-20">
+      
       <Carrucel />
       <main className="container mx-auto px-4 py-16 lg:py-24">
 
@@ -70,8 +110,9 @@ export default function Home() {
         {/* Product Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
           {productos.map((prod) => (
-            <div
+            <Link
               key={prod.id}
+              to={`/product/${prod.id}`}
               className="shadow-xl overflow-hidden transform transition-all duration-300 hover:scale-[1.03] hover:shadow-2xl hover:bg-gray-700/80 group"
             >
               <div className="relative overflow-hidden h-100">
@@ -96,68 +137,69 @@ export default function Home() {
                           S/ {Number(prod.precio).toFixed(2)}
                         </p>
                   </div>
-            </div>
+            </Link>
           ))}
         </div>
 
-        {/* Seller Plans Section */}
-        <div className="mt-24 rounded-3xl p-8 lg:p-16 shadow-2xl">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-500 mb-4 tracking-tight">
-              Conviértete en Vendedor
-            </h2>
-            <p className="text-lg text-gray-400 max-w-2xl mx-auto">
-              Elige un plan que se ajuste a tus necesidades y comienza a vender tus productos en nuestra plataforma.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
-            {/* Plan Básico */}
-            <div className="shadow-xl p-8 flex flex-col items-center border-1 border-white hover:shadow-2xl transition duration-300 transform hover:-translate-y-2">
-              <h3 className="text-3xl font-bold text-gray-200 mb-2">Básico</h3>
-              <p className="text-6xl font-extrabold text-white mb-6">S/9<span className="text-base font-normal text-gray-400">/mes</span></p>
-              <ul className="space-y-4 text-gray-400 mb-8 text-left w-full max-w-sm">
-                <li className="flex items-center"><FaCheckCircle className="text-green-400 mr-3 flex-shrink-0" /> Venta de productos ilimitados</li>
-                <li className="flex items-center"><FaCheckCircle className="text-green-400 mr-3 flex-shrink-0" /> Promoción en la página web</li>
-                <li className="flex items-center"><FaCheckCircle className="text-green-400 mr-3 flex-shrink-0" /> 5 Anuncios al día en la radio</li>
-              </ul>
-               <Link to={"/FormNvend"} className="w-full bg-indigo-500 hover:bg-indigo-600 text-white py-4 rounded-xl font-bold transition duration-300 shadow-lg text-center">
-                Elegir plan
-              </Link>
+        {/* --- SECCIÓN 'CONVIÉRTETE EN VENDEDOR' (AHORA DINÁMICA) --- */}
+        {usuario.rol === "usuario" && (
+          <div className="rounded-3xl p-8 lg:p-12 text-center">
+              <h2 className="from-pink-400 to-purple-500 text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r mb-4 tracking-tight">
+                Conviértete en Vendedor
+              </h2>
+              <p className="text-lg  mb-10">Elige un plan para empezar a vender tus productos.</p>
+              
+              {loadingPlanes ? (
+                <p className="text-gray-500 text-lg">Cargando planes...</p>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-10 items-center">
+                  {/* AQUÍ COMIENZA EL RENDERIZADO DINÁMICO DE LOS PLANES */}
+                  {planes.map((plan) => (
+                    <div 
+                      key={plan.id}
+                      className={`
+                        relative shadow-2xl p-10 flex flex-col items-center border-2 scale-[1.05] transition duration-300 transform hover:-translate-y-2`}
+                    >
+                      {plan.destacado ? (
+                        <span className="absolute top-0 right-0 -mt-4 mr-4 bg-indigo-500 text-white text-xs font-bold px-4 py-2 rounded-full uppercase tracking-wide shadow-lg">Popular</span>
+                      ) : null}
+                      <h3 className={`font-bold mb-2 ${plan.destacado ? 'text-3xl text-indigo-200' : 'text-2xl text-white'}`}>{plan.nombre}</h3>
+                      <p className={`font-extrabold text-white mb-4 ${plan.destacado ? 'text-7xl' : 'text-6xl'}`}>
+                        S/{Number(plan.precio).toFixed(0)}
+                        <span className="text-base font-normal text-gray-500">{plan.periodo}</span>
+                      </p>
+                      <ul className="space-y-3 text-indigo-200 mb-8 text-left w-full">
+                        {plan.caracteristicas.map((feature, index) => (
+                          <li key={index} className="flex items-center">
+                            <FaCheckCircle className="text-green-500 mr-2 flex-shrink-0" /> {feature}
+                          </li>
+                        ))}
+                      </ul>
+                      
+                      <div className="mt-auto w-full">
+                        {plan.deshabilitado ? (
+                          <button disabled className="w-full bg-indigo-100 text-indigo-700 py-4 rounded-xl font-bold cursor-not-allowed opacity-50 shadow-inner">
+                            Elegir plan
+                          </button>
+                        ) : (
+                          <Link 
+                            to={plan.url_contratacion} 
+                            state={{ plan: plan }} // <-- AÑADIMOS ESTO PARA PASAR EL OBJETO DEL PLAN
+                            className="block w-full bg-indigo-500 hover:bg-indigo-600 text-white py-4 rounded-xl font-bold transition duration-200 shadow-lg text-center">
+                            Elegir plan
+                          </Link>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
+          )}
 
-            {/* Plan Estándar (Destacado) */}
-            <div className="relative  shadow-2xl p-10 flex flex-col items-center border-2 scale-[1.05] transition duration-300 transform hover:-translate-y-2">
-              <span className="absolute top-0 right-0 -mt-4 mr-4 bg-indigo-500 text-white text-xs font-bold px-4 py-2 rounded-full uppercase tracking-wide shadow-lg">Popular</span>
-              <h3 className="text-3xl font-bold mb-2 text-indigo-200">Estándar</h3>
-              <p className="text-7xl font-extrabold text-white mb-6">S/19<span className="text-lg font-normal text-indigo-300">/mes</span></p>
-              <ul className="space-y-4 text-indigo-200 mb-8 text-left w-full max-w-sm">
-                <li className="flex items-center"><FaCheckCircle className="text-green-400 mr-3 flex-shrink-0" /> Venta de productos ilimitados</li>
-                <li className="flex items-center"><FaCheckCircle className="text-green-400 mr-3 flex-shrink-0" /> Promoción en la página web e impulso en productos</li>
-                <li className="flex items-center"><FaCheckCircle className="text-green-400 mr-3 flex-shrink-0" /> 10 Anuncios al día en la radio</li>
-              </ul>
-              <Link to={"/FormNvend"} className="w-full bg-indigo-500 hover:bg-indigo-600 text-white py-4 rounded-xl font-bold transition duration-300 shadow-lg text-center">
-                Elegir plan
-              </Link>
-            </div>
-
-            {/* Plan Avanzado */}
-            <div className="shadow-xl p-8 flex flex-col items-center border-1 border-white hover:shadow-2xl transition duration-300 transform hover:-translate-y-2">
-              <h3 className="text-3xl font-bold text-gray-200 mb-2">Avanzado</h3>
-              <p className="text-6xl font-extrabold text-white mb-6">S/29<span className="text-base font-normal text-gray-400">/mes</span></p>
-              <ul className="space-y-4 text-gray-400 mb-8 text-left w-full max-w-sm">
-                <li className="flex items-center"><FaCheckCircle className="text-green-400 mr-3 flex-shrink-0" /> Venta de productos ilimitados</li>
-                <li className="flex items-center"><FaCheckCircle className="text-green-400 mr-3 flex-shrink-0" /> Promoción total</li>
-                <li className="flex items-center"><FaCheckCircle className="text-green-400 mr-3 flex-shrink-0" /> 20 Anuncios al día en la radio</li>
-              </ul>
-              <Link to={"/FormNvend"} className="w-full bg-indigo-500 hover:bg-indigo-600 text-white py-4 rounded-xl font-bold transition duration-300 shadow-lg text-center">
-                Elegir plan
-              </Link>
-            </div>
-          </div>
-        </div>
       </main>
       <Footer />
     </div>
+    </>
   );
 }

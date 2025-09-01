@@ -82,10 +82,7 @@ export default function ProductIndi() {
                 <span>Consulta aquí</span>
               </button>
 
-              <button className="flex items-center justify-center gap-2 bg-blue-600 text-white font-bold py-3 px-6 rounded-xl text-lg hover:bg-blue-700 transition-colors shadow-md">
-                <ShoppingCartIcon className="w-6 h-6" />
-                <span>Añadir al carrito</span>
-              </button>
+            
             </div>
           </div>
         </div>
