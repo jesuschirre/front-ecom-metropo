@@ -168,18 +168,6 @@ export default function Perfil() {
                     <label className="block text-sm font-semibold mb-1">Biografía</label>
                     <div className="mt-3"><textarea rows="4" placeholder="Cuéntanos un poco sobre ti..." className="block w-full pl-6 pr-3 py-3 bg-[#161616] text-[#8A8AA0] rounded-xl border-gray-300 focus:ring-blue-500 focus:border-blue-500 transition duration-200"></textarea></div>
                   </div>
-                  <div>
-                    <label className="block text-sm font-semibold mb-1">Género</label>
-                    <div className="flex gap-4 mt-3">
-                      <label className="flex items-center gap-1"><input type="radio" name="genero" defaultChecked className="form-radio text-blue-600" /> Masculino</label>
-                      <label className="flex items-center gap-1"><input type="radio" name="genero" className="form-radio text-blue-600" /> Femenino</label>
-                      <label className="flex items-center gap-1"><input type="radio" name="genero" className="form-radio text-blue-600" /> Otro</label>
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold mb-1">Cumpleaños</label>
-                    <div className="mt-3"><input type="date" defaultValue="2005-08-01" className="block w-full pl-2 pr-3 py-2 bg-[#161616] text-[#8A8AA0] rounded-xl border-gray-300 focus:ring-blue-500 focus:border-blue-500 transition duration-200" /></div>
-                  </div>
                   <div className="md:col-span-2 mt-4">
                     <button type="submit" className="w-full bg-amber-400 text-white px-6 py-3 rounded-xl font-bold hover:bg-amber-600 transition duration-200 shadow-md cursor-pointer">Guardar Cambios</button>
                   </div>
