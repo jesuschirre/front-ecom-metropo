@@ -16,7 +16,7 @@ const DashboardLayout = () => {
 
 
   return (
-    <div className="flex min-h-screen bg-gray-100 text-white">
+    <div className="flex min-h-screen bg-gray-100 text-white font-mono">
         <aside className="w-64 bg-[#232323] shadow-lg p-6 flex flex-col fixed top-0 left-0 h-screen">
         <a href="/" className="flex items-center space-x-3 my-9">
               <img
@@ -32,8 +32,8 @@ const DashboardLayout = () => {
             className={({ isActive }) =>
               `block px-4 py-2 rounded-md text-lg font-medium transition-colors duration-200 ${
                 isActive
-                  ? "bg-blue-100 text-blue-700 font-semibold shadow"
-                  : "hover:bg-blue-50 hover:text-blue-600"
+                  ? "bg-blue-100 text-amber-600 font-semibold shadow"
+                  : "hover:bg-blue-50 hover:text-amber-500"
               }`
             }
           >
@@ -44,8 +44,8 @@ const DashboardLayout = () => {
             className={({ isActive }) =>
               `block px-4 py-2 rounded-md text-lg font-medium transition-colors duration-200 ${
                 isActive
-                  ? "bg-blue-100 text-blue-700 font-semibold shadow"
-                  : "hover:bg-blue-50 hover:text-blue-600"
+                  ? "bg-blue-100 text-amber-600 font-semibold shadow"
+                  : "hover:bg-blue-50 hover:text-amber-500"
               }`
             }
           >
@@ -59,8 +59,8 @@ const DashboardLayout = () => {
               className={({ isActive }) =>
                 `block px-4 py-2 rounded-md text-lg font-medium transition-colors duration-200 ${
                   isActive
-                    ? "bg-blue-100 text-blue-700 font-semibold shadow"
-                    : "hover:bg-blue-50 hover:text-blue-600"
+                  ? "bg-blue-100 text-amber-600 font-semibold shadow"
+                  : "hover:bg-blue-50 hover:text-amber-500"
                 }`
               }
             >

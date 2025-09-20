@@ -43,16 +43,16 @@ export default function Login() {
   };
 
   return (
-    <div className="flex w-full h-screen bg-black">
+    <div className="flex w-full h-screen bg-black ">
       <div className="w-full flex items-center justify-center lg:w-1/2">
         <form
         onSubmit={handleSubmit}
-        className="bg-white shadow-lg rounded-2xl px-8 pt-6 pb-8 w-full max-w-md"
+        className="bg-white shadow-lg rounded-2xl px-8 pt-6 pb-8 w-full max-w-md "
         >
           <h1 className="text-5xl font-semibold text-center text-gray-800 mb-6">
             Iniciar sesión
           </h1>
-          <p className="font-medium text-lg text-gray-500 mt-4">Bienvenido devuelta introduce tus credenciales</p>
+          <p className="font-medium text-lg text-gray-500 mt-4 ">Bienvenido devuelta introduce tus credenciales</p>
           <div className="mt-7">
             <label className="text-lg font-medium">Correo</label>
             <input
@@ -72,7 +72,7 @@ export default function Login() {
             />
             <button
               type="submit"
-              className=" mt-6 w-full bg-violet-500 rounded-xl text-white text-lg py-3 hover:bg-violet-400 transition cursor-pointer"
+              className="font-mono mt-6 w-full bg-amber-400 rounded-xl text-white text-lg py-3 hover:bg-amber-500 transition cursor-pointer"
             >
               Entrar
             </button>
@@ -80,7 +80,7 @@ export default function Login() {
         </form>
       </div>
       <div className="hidden relative lg:flex h h-full w-1/2 items-center justify-center bg-gray-200">
-          <div className="w-60 h-60 bg-gradient-to-tr from-violet-500 to-pink-500 rounded-full animate-spin"/>
+          <div className="w-60 h-60 bg-gradient-to-tr from-amber-500 to-pink-500 rounded-full animate-spin"/>
           <div className="w-full h-1/2 absolute bg-white/10 bottom-0 backdrop-blur-lg"/>
       </div>
     </div>

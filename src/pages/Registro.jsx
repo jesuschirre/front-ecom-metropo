@@ -120,7 +120,7 @@ export default function Registro() {
 
             <button 
               type="submit" 
-              className="w-full bg-violet-500 rounded-xl text-white text-lg py-3 hover:bg-violet-400 transition cursor-pointer"
+              className="w-full bg-amber-400 rounded-xl text-white text-lg py-3 font-mono hover:bg-amber-500 transition cursor-pointer"
               disabled={loading} // Deshabilitado mientras carga
             >
               {loading ? 'Registrando...' : 'Registrarse'}
@@ -139,7 +139,7 @@ export default function Registro() {
       </div>
       
       <div className="hidden relative lg:flex h h-full w-1/2 items-center justify-center bg-gray-200">
-          <div className="w-60 h-60 bg-gradient-to-tr from-violet-500 to-pink-500 rounded-full animate-spin"/>
+          <div className="w-60 h-60 bg-gradient-to-tr from-amber-500 to-pink-500 rounded-full animate-spin"/>
           <div className="w-full h-1/2 absolute bg-white/10 bottom-0 backdrop-blur-lg"/>
       </div>
     </div>

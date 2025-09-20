@@ -204,13 +204,13 @@ export default function Header() {
                 <>
                   <a
                     href="/login"
-                    className="bg-blue-600 px-3 py-1 rounded hover:bg-blue-700"
+                    className="bg-amber-400 px-3 py-2 rounded hover:bg-amber-500 font-mono"
                   >
                     Iniciar sesión
                   </a>
                   <a
                     href="/registro"
-                    className="bg-green-600 px-3 py-1 rounded hover:bg-green-700"
+                    className="bg-green-600 px-3 py-2 rounded hover:bg-green-700 font-mono"
                   >
                     Registrarse
                   </a >
