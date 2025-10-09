@@ -240,7 +240,7 @@ export default function Perfil() {
           {/* --- SECCIÓN 'CONVIÉRTETE EN VENDEDOR' (AHORA DINÁMICA) --- */}
           {usuario.rol === "usuario" && (
             <div className="rounded-3xl p-8 lg:p-12 text-center">
-              <h2 className="text-white text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r mb-4 tracking-tight">
+              <h2 className="text-white text-4xl md:text-5xl font-extrabold  bg-clip-text bg-gradient-to-r mb-4 tracking-tight">
                 Conviértete en Vendedor
               </h2>
               <p className="text-lg  mb-10">Elige un plan para empezar a vender tus productos.</p>
@@ -280,7 +280,6 @@ export default function Perfil() {
                         ) : (
                           <Link 
                             to={plan.url_contratacion} 
-                            state={{ plan: plan }} // <-- AÑADIMOS ESTO PARA PASAR EL OBJETO DEL PLAN
                             className="block w-full bg-amber-500 hover:bg-amber-400 text-white py-4 rounded-xl font-bold transition duration-200 shadow-lg text-center">
                             Elegir plan
                           </Link>

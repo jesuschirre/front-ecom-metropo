@@ -1,20 +1,6 @@
 import { Outlet, NavLink } from "react-router-dom";
-import { useEffect,useState } from "react";
+
 const DashboardLayout = () => {
-  const [usuario, setUsuario] = useState([])
-  
-    useEffect(() => {
-      const token = localStorage.getItem("token");
-
-      fetch("http://localhost:3000/users/perfil", {
-        headers: { "Authorization": `Bearer ${token}` }
-      })
-        .then(res => res.json())
-        .then(data => setUsuario(data))
-        .catch(err => console.error("Error al cargar info vendedor:", err));
-    }, []); // importante
-
-
   return (
     <div className="flex min-h-screen bg-gray-100 text-white font-mono">
         <aside className="w-64 bg-[#232323] shadow-lg p-6 flex flex-col fixed top-0 left-0 h-screen">
@@ -51,26 +37,6 @@ const DashboardLayout = () => {
           >
             Perfil
           </NavLink>
-
-        {
-          usuario.rol === "vendedor" && (
-            <NavLink
-              to="/dashboard/Productos"
-              className={({ isActive }) =>
-                `block px-4 py-2 rounded-md text-lg font-medium transition-colors duration-200 ${
-                  isActive
-                  ? "bg-blue-100 text-amber-600 font-semibold shadow"
-                  : "hover:bg-blue-50 hover:text-amber-500"
-                }`
-              }
-            >
-              Productos
-            </NavLink>
-          )
-        }
-
-          
-
         </nav>
       </aside>
 

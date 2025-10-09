@@ -1,47 +1,34 @@
 export default function Footer() {
   return (
     <footer className="bg-gray-950 text-gray-300 py-10 ">
-      <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8">
-        {/* Logo y descripción */}
-        <div>
-          <h2 className="text-2xl font-bold text-white">METROPOLI</h2>
-          <p className="mt-4 text-gray-400">
-            Tu tienda de confianza para artículos únicos del mundo fantástico.
-          </p>
-        </div>
-
-        {/* Links rápidos */}
-        <div>
-          <h3 className="text-lg font-semibold text-white mb-4">Enlaces rápidos</h3>
-          <ul className="space-y-2">
-            <li><a href="#" className="hover:text-white transition">Inicio</a></li>
-            <li><a href="#" className="hover:text-white transition">Productos</a></li>
-            <li><a href="#" className="hover:text-white transition">Categorías</a></li>
-            <li><a href="#" className="hover:text-white transition">Contacto</a></li>
-          </ul>
-        </div>
-
-        {/* Redes sociales */}
-        <div>
-          <h3 className="text-lg font-semibold text-white mb-4">Síguenos</h3>
-          <div className="flex space-x-4">
-            <a href="#" className="hover:text-white transition">
-              <i className="fab fa-facebook-f text-xl"></i>
-            </a>
-            <a href="#" className="hover:text-white transition">
-              <i className="fab fa-twitter text-xl"></i>
-            </a>
-            <a href="#" className="hover:text-white transition">
-              <i className="fab fa-instagram text-xl"></i>
-            </a>
+      <div className="container mx-auto px-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div>
+                <h3 className="text-xl font-bold mb-4">Radio Metropoli</h3>
+                <p className="text-gray-300">La voz de tu comunidad. Anuncia con nosotros y llega a miles.</p>
+              </div>
+              <div>
+                <h4 className="font-bold mb-4">Enlaces Rápidos</h4>
+                <ul className="space-y-2">
+                  <li><a href="#servicios" className="text-gray-300 hover:text-white">Servicios</a></li>
+                  <li><a href="#contacto" className="text-gray-300 hover:text-white">Contacto</a></li>
+                  <li><a href="#" className="text-gray-300 hover:text-white">Escuchar En Vivo</a></li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="font-bold mb-4">Síguenos</h4>
+                <div className="flex space-x-4">
+                  <a href="#" className="text-gray-300 hover:text-white text-2xl"><i className="fab fa-facebook"></i></a>
+                  <a href="#" className="text-gray-300 hover:text-white text-2xl"><i className="fab fa-instagram"></i></a>
+                  <a href="#" className="text-gray-300 hover:text-white text-2xl"><i className="fab fa-twitter"></i></a>
+                </div>
+              </div>
+            </div>
+            
           </div>
-        </div>
-      </div>
-
-      {/* Línea inferior */}
-      <div className="border-t border-gray-700 mt-8 pt-4 text-center text-gray-500">
-        © {new Date().getFullYear()} MiTienda. Todos los derechos reservados.
-      </div>
+          <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-300">
+              <p>&copy; 2025 Radio Metropoli. Todos los derechos reservados.</p>
+            </div>
     </footer>
   );
 }

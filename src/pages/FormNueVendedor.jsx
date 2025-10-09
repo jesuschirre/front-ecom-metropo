@@ -1,155 +1,295 @@
-import { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import Header from "../components/Header";
-import { useAuth } from "../context/AuthContext";
-import Footer from "../components/Footer";
+import { useEffect, useState } from 'react';
+import { 
+  HiUser, HiPlus, HiSearch, HiOfficeBuilding, HiMail
+} from 'react-icons/hi';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
+
+// Componente reutilizable para agrupar secciones del formulario
+const FieldGroup = ({ title, children }) => (
+  <div className="bg-white p-6 shadow-sm rounded-lg border mb-8">
+    <h3 className="text-lg font-semibold text-gray-800 border-b border-gray-200 pb-3 mb-6">{title}</h3>
+    {children}
+  </div>
+);
 
 export default function FormNueVendedor() {
-  const { usuario } = useAuth();
-  const location = useLocation();
-  const navigate = useNavigate();
 
-  // 1. Recibimos el plan seleccionado desde la página anterior
-  const planSeleccionado = location.state?.plan;
-
-  const [form, setForm] = useState({
-    metodo_pago: "yape",
-    monto: "", // Se llenará automáticamente
-    referencia_pago: "",
-    comprobante_pago: null,
+  // Estados del formulario
+  const [cliente, setCliente] = useState({
+    nombre: '',
+    dni: '',
+    direccion: '',
+    correo: '',
   });
+  const [documento, setDocumento] = useState('');
+  const [buscandoDoc, setBuscandoDoc] = useState(false);
+  const [docError, setDocError] = useState('');
 
-  // 2. Nuevos estados para una UX profesional (loading y mensajes)
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState({ text: '', type: '' });
+  const [planes, setPlanes] = useState([]);
 
-  // 3. Efecto para rellenar el monto y manejar si el usuario llega aquí por error
-  useEffect(() => {
-    if (planSeleccionado && planSeleccionado.precio) {
-      // Rellenamos el monto automáticamente con el precio del plan
-      setForm(prevForm => ({ ...prevForm, monto: planSeleccionado.precio }));
-    } else {
-      // Si no hay plan seleccionado, es un error. Redirigimos al perfil.
-      console.warn("Acceso a FormNueVendedor sin un plan. Redirigiendo...");
-      navigate('/UsuInfo');
-    }
-  }, [planSeleccionado, navigate]);
+  console.log(planes)
+  const [nombreCampana, setNombreCampana] = useState('');
+  const [metodoPago, setMetodoPago] = useState('');
+  const [comprobante, setComprobante] = useState(null);
 
-  const handleChange = (e) => {
-    const { name, value, files } = e.target;
-    if (name === "comprobante_pago") {
-      setForm({ ...form, comprobante_pago: files[0] });
-    } else {
-      setForm({ ...form, [name]: value });
-    }
-  };
 
-  // 4. Lógica de envío completamente renovada
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setMessage({ text: '', type: '' });
+  // Traer los planes
+  useEffect ( () => {
+    // cargar los planes
+    fetch("http://localhost:3000/api/planes")
+    .then((res) => res.json())
+    .then((data) => setPlanes(data))
+    .catch((err) => console.error("Error al cargar planes:", err))
+  }, []);
 
-    if (!usuario || !usuario.id) {
-      setMessage({ text: "Error de autenticación. Por favor, inicia sesión de nuevo.", type: 'error' });
-      setLoading(false);
+  //  Buscar cliente por DNI/RUC
+  const handleBuscarDocumento = async () => {
+    if (!documento.trim()) {
+      setDocError('Por favor ingresa un número de documento.');
       return;
     }
 
-    const formData = new FormData();
-    formData.append("usuario_id", usuario.id);
-    formData.append("metodo_pago", form.metodo_pago);
-    formData.append("monto", form.monto);
-    formData.append("referencia_pago", form.referencia_pago);
-    formData.append("comprobante_pago", form.comprobante_pago);
-    formData.append("plan_nombre", planSeleccionado.nombre); // Enviamos el nombre del plan para el email
+    setBuscandoDoc(true);
+    setDocError('');
 
     try {
-      const res = await fetch("http://localhost:3000/solicitudes/solicitar-vendedor", {
-        method: "POST",
-        body: formData,
+      const response = await fetch(`http://localhost:3000/api/consultas_admin/documento/${documento}`);
+      const data = await response.json();
+
+      if (data.error) {
+        setDocError(data.error);
+        return;
+      }
+
+      // Autocompletar campos del cliente
+      setCliente({
+        nombre: data.nombreCompleto || '',
+        dni: documento,
+        direccion: data.direccion || '',
+        correo: cliente.correo,
       });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Error al enviar la solicitud.");
-
-      // ÉXITO: Mostramos el mensaje y preparamos la redirección
-      setMessage({ text: data.message, type: 'success' });
-      
-      // La pantalla ya no se queda "en blanco" o con datos. Se limpia y redirige.
-      setTimeout(() => {
-        navigate('/Userinfo'); // Redirigir al perfil después de 3 segundos
-      }, 3500);
-
-    } catch (err) {
-      setMessage({ text: err.message, type: 'error' });
+    } catch (error) {
+      console.error('Error al buscar documento:', error);
+      setDocError('Error al consultar el documento.');
     } finally {
-      setLoading(false);
+      setBuscandoDoc(false);
     }
   };
 
-  // Mientras se procesa la redirección inicial, msostramos un loader
-  if (!planSeleccionado) {
-    return <div className="min-h-screen bg-black flex items-center justify-center"><p className="text-white">Cargando...</p></div>;
-  }
+  // Manejar cambios en los inputs del cliente
+  const handleChangeCliente = (e) => {
+    const { name, value } = e.target;
+    setCliente({ ...cliente, [name]: value });
+  };
+
+  // Manejo de envío del formulario
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const datosFormulario = {
+      cliente,
+      nombreCampana,
+      metodoPago,
+      comprobante,
+    };
+
+    console.log('Datos del contrato:', datosFormulario);
+    alert('Formulario enviado correctamente ✅');
+  };
 
   return (
     <>
       <Header />
-      <div className="min-h-screen flex items-center justify-center py-8 bg-black">
-        <div className="max-w-lg w-full bg-gray-900 shadow-2xl rounded-xl p-8 transform transition-all">
-          <h2 className="text-3xl font-extrabold text-center text-white ">
-            Pago del Plan "{planSeleccionado.nombre}"
-          </h2>
 
-          <div className="border-l-4 border-blue-500 p-5 my-6 rounded-lg bg-gray-800">
-            <p className="text-sm text-gray-300">
-              📲 Paga con <strong>Yape</strong> o <strong>Plin</strong> al número:{" "}
-              <span className="font-semibold text-blue-400">987 654 321</span> o escanea el QR y sube tu comprobante.
-            </p>
-            <img src="/qr-yape.png" alt="QR Code" className="w-48 mx-auto mt-4 border-2 border-gray-700 rounded-lg" />
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* 5. Componente de mensajes que reemplaza al alert() */}
-            {message.text && (
-              <div className={`p-4 text-sm rounded-lg text-center ${message.type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                {message.text}
+      <div className="container mx-auto my-24 px-4">
+        <form onSubmit={handleSubmit} className="space-y-8">
+          
+          {/* DATOS DEL CLIENTE */}
+          <FieldGroup title="1. Datos del Cliente">
+            <div className="space-y-6">
+              
+              {/* Botón crear nuevo cliente */}
+              <div className="flex gap-1 mb-4 border border-gray-200 rounded-lg p-1 bg-gray-100">
+                <button
+                  type="button"
+                  className="w-full justify-center px-4 py-2 text-sm font-medium rounded-md flex items-center gap-2 bg-sky-600 text-white hover:bg-sky-700 transition-colors"
+                  onClick={() => setCliente({ nombre: '', dni: '', direccion: '', correo: '' })}
+                >
+                  <HiPlus /> Crear Nuevo Cliente
+                </button>
               </div>
+
+              {/* Buscar por DNI o RUC */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Buscar por DNI / RUC</label>
+                <div className="mt-1 flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={documento}
+                    onChange={(e) => setDocumento(e.target.value)}
+                    placeholder="Ingrese DNI o RUC"
+                    className="flex-grow block w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleBuscarDocumento}
+                    disabled={buscandoDoc}
+                    className="inline-flex items-center gap-2 px-3 py-2 rounded-md bg-gray-600 text-white shadow-sm hover:bg-gray-700 disabled:opacity-50"
+                  >
+                    <HiSearch /> <span>{buscandoDoc ? 'Buscando...' : 'Buscar'}</span>
+                  </button>
+                </div>
+                {docError && <p className="text-xs text-red-600 mt-1">{docError}</p>}
+              </div>
+
+              {/* Campos del cliente */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5 pt-4 border-t">
+                <div className="md:col-span-2">
+                  <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                    <HiUser /> Nombre / Razón Social
+                  </label>
+                  <input
+                    type="text"
+                    name="nombre"
+                    value={cliente.nombre}
+                    onChange={handleChangeCliente}
+                    placeholder="(Se autocompleta)"
+                    required
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500"
+                  />
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                    <HiUser /> DNI / RUC
+                  </label>
+                  <input
+                    type="text"
+                    name="dni"
+                    value={cliente.dni}
+                    onChange={handleChangeCliente}
+                    placeholder="(Se autocompleta)"
+                    required
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500"
+                  />
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                    <HiOfficeBuilding /> Dirección Fiscal
+                  </label>
+                  <input
+                    type="text"
+                    name="direccion"
+                    value={cliente.direccion}
+                    onChange={handleChangeCliente}
+                    placeholder="(Opcional para DNI, se autocompleta para RUC)"
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500"
+                  />
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                    <HiMail /> Correo Electrónico
+                  </label>
+                  <input
+                    type="email"
+                    name="correo"
+                    value={cliente.correo}
+                    onChange={handleChangeCliente}
+                    placeholder="contacto@empresa.com"
+                    required
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500"
+                  />
+                </div>
+              </div>
+            </div>
+          </FieldGroup>
+
+          {/*  PLAN */}
+        <FieldGroup title="2. Seleccione un Plan">
+          <p className="text-sm text-gray-600 mb-4">
+            Aquí puedes seleccionar uno de los planes disponibles.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {planes.length > 0 ? (
+              planes.map((plan) => (
+                <div
+                  key={plan.id}
+                  className="border rounded-lg p-4 shadow-sm hover:shadow-md transition cursor-pointer bg-white"
+ 
+                >
+                  <h2 className="text-lg font-semibold text-gray-800">{plan.nombre}</h2>
+                  <p className="text-sm text-gray-600">{plan.descripcion}</p>
+                  <p className="text-sky-700 font-bold mt-2">S/ {plan.precio}</p>
+                </div>
+              ))
+            ) : (
+              <p className="text-gray-500 text-sm">No hay planes disponibles.</p>
             )}
+          </div>
+        </FieldGroup>
 
-            <div>
-              <label className="block text-sm font-medium text-white mb-2">Método de pago</label>
-              <select name="metodo_pago" value={form.metodo_pago} onChange={handleChange} className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500" disabled={loading}>
-                <option value="yape">Yape</option>
-                <option value="plin">Plin</option>
-              </select>
+
+          {/* DETALLES DEL CONTRATO */}
+          <FieldGroup title="3. Detalles Finales del Contrato">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
+              <div className="md:col-span-2">
+                <label htmlFor="nombre_campana" className="block text-sm font-medium text-gray-700">Nombre de la Campaña</label>
+                <input
+                  type="text"
+                  id="nombre_campana"
+                  name="nombre_campana"
+                  value={nombreCampana}
+                  onChange={(e) => setNombreCampana(e.target.value)}
+                  required
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500"
+                />
+              </div>
             </div>
+          </FieldGroup>
 
-            {/* 6. El campo Monto ahora es un input deshabilitado */}
-            <div>
-              <label className="block text-sm font-medium text-white mb-2">Monto a Pagar</label>
-              <input type="text" name="monto" value={`S/ ${Number(form.monto).toFixed(2)}`} className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white cursor-not-allowed" readOnly />
-            </div>
+          {/* MÉTODO DE PAGO */}
+          <FieldGroup title="4. Datos de Pago">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Método de pago</label>
+            <select
+              value={metodoPago}
+              onChange={(e) => setMetodoPago(e.target.value)}
+              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500"
+              required
+            >
+              <option value="">Selecciona un método</option>
+              <option value="Yape">Yape</option>
+              <option value="Plin">Plin</option>
+              <option value="Transferencia">Transferencia</option>
+            </select>
+          </FieldGroup>
 
-            <div>
-              <label className="block text-sm font-medium text-white mb-2">Referencia de pago</label>
-              <input type="text" name="referencia_pago" value={form.referencia_pago} onChange={handleChange} className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500" required disabled={loading} />
-            </div>
+          {/* COMPROBANTE */}
+          <FieldGroup title="5. Comprobante de Pago">
+            <input
+              type="file"
+              accept=".jpg,.jpeg,.png,.pdf"
+              onChange={(e) => setComprobante(e.target.files[0])}
+              className="mt-2 block w-full text-sm text-gray-700 file:mr-3 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-sky-600 file:text-white hover:file:bg-sky-700"
+            />
+          </FieldGroup>
 
-            <div>
-              <label className="block text-sm font-medium text-white mb-2">Subir comprobante</label>
-              <input type="file" name="comprobante_pago" accept="image/*" onChange={handleChange} className="w-full text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700" required disabled={loading} />
-            </div>
-
-            {/* 7. El botón ahora muestra el estado de carga */}
-            <button type="submit" className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-wait" disabled={loading}>
-              {loading ? 'Enviando Solicitud...' : 'Enviar Solicitud'}
+          {/* BOTÓN FINAL */}
+          <div className="flex justify-end">
+            <button
+              type="submit"
+              className="bg-sky-600 hover:bg-sky-700 text-white px-6 py-2 rounded-md font-medium shadow-md"
+            >
+              Guardar Contrato
             </button>
-          </form>
-        </div>
+          </div>
+        </form>
       </div>
-      <Footer/>
+
+      <Footer />
     </>
   );
 }
