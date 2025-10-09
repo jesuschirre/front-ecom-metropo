@@ -60,7 +60,7 @@ export default function Home() {
           <div className="absolute inset-0 bg-black opacity-50"></div>
           <div className="container mx-auto px-4 text-center relative z-10">
             <h2 className="text-5xl md:text-6xl font-bold mb-6 animate-fade-in font-mono">
-              ¡Lleva tu marca al aire con Radio Estrella!
+              ¡Lleva tu marca al aire con Radio Metropoli!
             </h2>
             <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto opacity-90 font-mono">
               Conecta con miles de oyentes leales y promociona tu negocio con

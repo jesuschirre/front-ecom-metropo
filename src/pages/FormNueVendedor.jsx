@@ -27,8 +27,9 @@ export default function FormNueVendedor() {
   const [docError, setDocError] = useState('');
 
   const [planes, setPlanes] = useState([]);
+  const [planSeleccionado, setPlanSeleccionado] = useState(null);
+  console.log(planSeleccionado)
 
-  console.log(planes)
   const [nombreCampana, setNombreCampana] = useState('');
   const [metodoPago, setMetodoPago] = useState('');
   const [comprobante, setComprobante] = useState(null);
@@ -95,8 +96,28 @@ export default function FormNueVendedor() {
     };
 
     console.log('Datos del contrato:', datosFormulario);
-    alert('Formulario enviado correctamente ✅');
+    alert('Formulario enviado correctamente ');
   };
+
+  const handleplanes = () => {
+
+  }
+
+  const cargarImagnes = async(e) => {
+    const file = e.target.files[0]
+    if (!file) return
+    const data = new FormData()
+    data.append("file", file)
+    data.append("upload_preset", "ml_default")
+
+    const res =  await fetch("https://api.cloudinary.com/v1_1/db1a6vi9f/image/upload",{
+      method:"POST",
+      body:data
+    })
+    
+    const uploadedImageURL = await res.json()
+    console.log(uploadedImageURL)
+  }
 
   return (
     <>
@@ -207,30 +228,34 @@ export default function FormNueVendedor() {
             </div>
           </FieldGroup>
 
-          {/*  PLAN */}
-        <FieldGroup title="2. Seleccione un Plan">
-          <p className="text-sm text-gray-600 mb-4">
-            Aquí puedes seleccionar uno de los planes disponibles.
-          </p>
+        {/*  PLAN */}
+          <FieldGroup title="2. Seleccione un Plan">
+              <p className="text-sm text-gray-600 mb-4">
+                Aquí puedes seleccionar uno de los planes disponibles.
+              </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {planes.length > 0 ? (
-              planes.map((plan) => (
-                <div
-                  key={plan.id}
-                  className="border rounded-lg p-4 shadow-sm hover:shadow-md transition cursor-pointer bg-white"
- 
-                >
-                  <h2 className="text-lg font-semibold text-gray-800">{plan.nombre}</h2>
-                  <p className="text-sm text-gray-600">{plan.descripcion}</p>
-                  <p className="text-sky-700 font-bold mt-2">S/ {plan.precio}</p>
-                </div>
-              ))
-            ) : (
-              <p className="text-gray-500 text-sm">No hay planes disponibles.</p>
-            )}
-          </div>
-        </FieldGroup>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {planes.length > 0 ? (
+                  planes.map((plan) => {
+                    const isSelected = planSeleccionado === plan.id;
+                    return (
+                      <div
+                        key={plan.id}
+                        onClick={() => setPlanSeleccionado(plan.id)}
+                        className={`border rounded-lg p-4 shadow-sm cursor-pointer bg-white transition
+                          ${isSelected ? 'border-sky-600 border-2 bg-sky-100 shadow-md' : 'hover:shadow-md'}`}
+                      >
+                        <h2 className="text-lg font-semibold text-gray-800">{plan.nombre}</h2>
+                        <p className="text-sm text-gray-600">{plan.descripcion}</p>
+                        <p className="text-sky-700 font-bold mt-2">S/ {plan.precio}</p>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <p className="text-gray-500 text-sm">No hay planes disponibles.</p>
+                )}
+              </div>
+            </FieldGroup>
 
 
           {/* DETALLES DEL CONTRATO */}
@@ -272,7 +297,7 @@ export default function FormNueVendedor() {
             <input
               type="file"
               accept=".jpg,.jpeg,.png,.pdf"
-              onChange={(e) => setComprobante(e.target.files[0])}
+              onChange={cargarImagnes}
               className="mt-2 block w-full text-sm text-gray-700 file:mr-3 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-sky-600 file:text-white hover:file:bg-sky-700"
             />
           </FieldGroup>
