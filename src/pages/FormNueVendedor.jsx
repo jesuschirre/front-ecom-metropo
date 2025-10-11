@@ -33,7 +33,7 @@ export default function FormNueVendedor() {
   const [nombreCampana, setNombreCampana] = useState('');
   const [metodoPago, setMetodoPago] = useState('');
   const [comprobante, setComprobante] = useState(null);
-
+  console.log(comprobante)
 
   // Traer los planes
   useEffect ( () => {
@@ -99,9 +99,6 @@ export default function FormNueVendedor() {
     alert('Formulario enviado correctamente ');
   };
 
-  const handleplanes = () => {
-
-  }
 
   const cargarImagnes = async(e) => {
     const file = e.target.files[0]
@@ -116,7 +113,7 @@ export default function FormNueVendedor() {
     })
     
     const uploadedImageURL = await res.json()
-    console.log(uploadedImageURL)
+    setComprobante(uploadedImageURL.url)
   }
 
   return (
@@ -241,7 +238,7 @@ export default function FormNueVendedor() {
                     return (
                       <div
                         key={plan.id}
-                        onClick={() => setPlanSeleccionado(plan.id)}
+                        onClick={() => setPlanSeleccionado(plan.precio,plan.max_anuncios_por_dia)}
                         className={`border rounded-lg p-4 shadow-sm cursor-pointer bg-white transition
                           ${isSelected ? 'border-sky-600 border-2 bg-sky-100 shadow-md' : 'hover:shadow-md'}`}
                       >
