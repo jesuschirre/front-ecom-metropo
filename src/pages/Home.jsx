@@ -11,7 +11,7 @@ export default function Home() {
   const [planes, setPlanes] = useState([]);
   const [loadingPlanes, setLoadingPlanes] = useState(true);
 
-
+  console.log(usuario)
   const navigate = useNavigate(); // Hook para navegar
 
   useEffect(() => {

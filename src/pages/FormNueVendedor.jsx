@@ -4,6 +4,8 @@ import {
 } from 'react-icons/hi';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import { useAuth } from '../context/AuthContext';
+
 
 // Componente reutilizable para agrupar secciones del formulario
 const FieldGroup = ({ title, children }) => (
@@ -13,8 +15,9 @@ const FieldGroup = ({ title, children }) => (
   </div>
 );
 
-export default function FormNueVendedor() {
 
+export default function FormNueVendedor() {
+  const { usuario } = useAuth();
   // Estados del formulario
   const [cliente, setCliente] = useState({
     nombre: '',
@@ -33,7 +36,6 @@ export default function FormNueVendedor() {
   const [nombreCampana, setNombreCampana] = useState('');
   const [metodoPago, setMetodoPago] = useState('');
   const [comprobante, setComprobante] = useState(null);
-  console.log(comprobante)
 
   // Traer los planes
   useEffect ( () => {
@@ -43,6 +45,11 @@ export default function FormNueVendedor() {
     .then((data) => setPlanes(data))
     .catch((err) => console.error("Error al cargar planes:", err))
   }, []);
+
+  const handleChangeCliente = (e) => {
+    const { name, value } = e.target;
+    setCliente(prev => ({ ...prev, [name]: value }));
+  };
 
   //  Buscar cliente por DNI/RUC
   const handleBuscarDocumento = async () => {
@@ -79,26 +86,43 @@ export default function FormNueVendedor() {
   };
 
   // Manejar cambios en los inputs del cliente
-  const handleChangeCliente = (e) => {
-    const { name, value } = e.target;
-    setCliente({ ...cliente, [name]: value });
-  };
-
-  // Manejo de envío del formulario
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const datosFormulario = {
-      cliente,
-      nombreCampana,
-      metodoPago,
-      comprobante,
+      usuario_id: usuario.id, // suponiendo que cliente es un objeto con .id
+      metodo_pago: metodoPago,
+      monto: planSeleccionado?.precio, // asumimos que lo guardaste así
+      comprobante_pago: comprobante,
+      nombre: cliente.nombre,
+      identificacion: cliente.dni,
+      nombre_publicidad: nombreCampana,
+      total_dias: planSeleccionado?.maxAnuncios || 30, // ajusta según cómo lo guardaste
+      direccion: cliente.direccion,
     };
 
-    console.log('Datos del contrato:', datosFormulario);
-    alert('Formulario enviado correctamente ');
-  };
+    try {
+      const response = await fetch("http://localhost:3000/api/contratosySoli/soliCon", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(datosFormulario),
+      });
 
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Error al enviar el formulario");
+      }
+
+      alert("Formulario enviado correctamente");
+      console.log("Respuesta del servidor:", data);
+    } catch (error) {
+      console.error("Error al enviar el formulario:", error.message);
+      alert("Error al enviar el formulario: " + error.message);
+    }
+  };
 
   const cargarImagnes = async(e) => {
     const file = e.target.files[0]
@@ -238,9 +262,9 @@ export default function FormNueVendedor() {
                     return (
                       <div
                         key={plan.id}
-                        onClick={() => setPlanSeleccionado(plan.precio,plan.max_anuncios_por_dia)}
+                        onClick={() => setPlanSeleccionado(plan)}
                         className={`border rounded-lg p-4 shadow-sm cursor-pointer bg-white transition
-                          ${isSelected ? 'border-sky-600 border-2 bg-sky-100 shadow-md' : 'hover:shadow-md'}`}
+                          ${isSelected ? 'border-sky-700 border-2 bg-sky-100 shadow-md' : 'hover:shadow-md'}`}
                       >
                         <h2 className="text-lg font-semibold text-gray-800">{plan.nombre}</h2>
                         <p className="text-sm text-gray-600">{plan.descripcion}</p>
@@ -303,9 +327,9 @@ export default function FormNueVendedor() {
           <div className="flex justify-end">
             <button
               type="submit"
-              className="bg-sky-600 hover:bg-sky-700 text-white px-6 py-2 rounded-md font-medium shadow-md"
+              className="bg-sky-600 hover:bg-sky-700 text-white px-6 py-2 rounded-md font-medium shadow-md cursor-pointer"
             >
-              Guardar Contrato
+              Enviar solicitud
             </button>
           </div>
         </form>
