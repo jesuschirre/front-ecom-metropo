@@ -257,21 +257,23 @@ export default function FormNueVendedor() {
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {planes.length > 0 ? (
-                  planes.map((plan) => {
-                    const isSelected = planSeleccionado === plan.id;
-                    return (
-                      <div
-                        key={plan.id}
-                        onClick={() => setPlanSeleccionado(plan)}
-                        className={`border rounded-lg p-4 shadow-sm cursor-pointer bg-white transition
-                          ${isSelected ? 'border-sky-700 border-2 bg-sky-100 shadow-md' : 'hover:shadow-md'}`}
-                      >
-                        <h2 className="text-lg font-semibold text-gray-800">{plan.nombre}</h2>
-                        <p className="text-sm text-gray-600">{plan.descripcion}</p>
-                        <p className="text-sky-700 font-bold mt-2">S/ {plan.precio}</p>
-                      </div>
-                    );
-                  })
+                  planes
+                    .filter((plan) => !plan.deshabilitado) // 👈 solo muestra los planes NO deshabilitados
+                    .map((plan) => {
+                      const isSelected = planSeleccionado === plan.id;
+                      return (
+                        <div
+                          key={plan.id}
+                          onClick={() => setPlanSeleccionado(plan)}
+                          className={`border rounded-lg p-4 shadow-sm cursor-pointer bg-white transition
+                            ${isSelected ? 'border-sky-700 border-2 bg-sky-100 shadow-md' : 'hover:shadow-md'}`}
+                        >
+                          <h2 className="text-lg font-semibold text-gray-800">{plan.nombre}</h2>
+                          <p className="text-sm text-gray-600">{plan.descripcion}</p>
+                          <p className="text-sky-700 font-bold mt-2">S/ {plan.precio}</p>
+                        </div>
+                      );
+                    })
                 ) : (
                   <p className="text-gray-500 text-sm">No hay planes disponibles.</p>
                 )}
