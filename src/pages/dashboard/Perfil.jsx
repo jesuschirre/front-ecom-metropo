@@ -6,7 +6,7 @@ import Swal from "sweetalert2";
 
 export default function Perfil() {
   const [usuario, setUsuario] = useState({ id: "", nombre: "", correo: "", rol: "" });
-  const [vendedorInfo, setVendedorInfo] = useState(null);
+  const [clienteInfo, setClienteInfo] = useState(null);
   
   // --- NUEVOS ESTADOS PARA MANEJAR LOS PLANES DINÁMICAMENTE ---
   const [planes, setPlanes] = useState([]);
@@ -24,12 +24,10 @@ export default function Perfil() {
     .then(data => {
       if (data && data.id) { // Verificación para asegurar que los datos son válidos
         setUsuario(data);
-        if (data.rol === "vendedor") {
-          fetch(`http://localhost:3000/vendedores/vendedor/usuario/${data.id}`, {
-            headers: { "Authorization": `Bearer ${token}` }
-          })
+        if (data.rol === "cliente") {
+          fetch(`http://localhost:3000/api/cliente/usuario/${data.id}`)
           .then(res => res.json())
-          .then(info => setVendedorInfo(info))
+          .then(info => setClienteInfo(info))
           .catch(err => console.error("Error al cargar info vendedor:", err));
         }
       }
@@ -48,8 +46,9 @@ export default function Perfil() {
       .finally(() => {
         setLoadingPlanes(false); // Quitar el estado de carga al finalizar, tanto si hay éxito como si hay error
       });
-      
   }, []); // El array vacío asegura que esto se ejecute solo una vez al montar el componente
+
+
 
   // --- FUNCIONES HANDLER (SIN CAMBIOS) ---
   const handleChange = (e) => {
@@ -77,26 +76,50 @@ export default function Perfil() {
     }
   };
 
-  const handleSubmitVendedor = async (e) => {
+  const handleSubmitcliente = async (e) => {
     e.preventDefault();
-    const token = localStorage.getItem("token");
+
+    // Aquí creamos el objeto con los campos que quieres actualizar
+    const updatedCliente = { ...clienteInfo };
+
     try {
-      const res = await fetch(`http://localhost:3000/vendedores/vendedor/${vendedorInfo.id}`, {
+      const res = await fetch(`http://localhost:3000/api/cliente/${clienteInfo.id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
-        body: JSON.stringify(vendedorInfo)
+        headers: { 
+          "Content-Type": "application/json", 
+        },
+        body: JSON.stringify(updatedCliente)
       });
+
       const data = await res.json();
+
       if (res.ok) {
-        Swal.fire({ title: "¡Información de vendedor actualizada!", text: data.message, icon: "success", timer: 2000, showConfirmButton: false });
+        Swal.fire({
+          title: "¡Información de cliente actualizada!",
+          text: data.message,
+          icon: "success",
+          timer: 2000,
+          showConfirmButton: false
+        });
       } else {
-        Swal.fire({ title: "Error", text: data.message || "No se pudo actualizar la info", icon: "error", confirmButtonText: "Cerrar" });
+        Swal.fire({
+          title: "Error",
+          text: data.message || "No se pudo actualizar la información",
+          icon: "error",
+          confirmButtonText: "Cerrar"
+        });
       }
     } catch (err) {
-      console.error("Error al actualizar vendedor:", err);
-      Swal.fire({ title: "Error", text: "Hubo un error al actualizar la información del vendedor.", icon: "error", confirmButtonText: "Cerrar" });
+      console.error("Error al actualizar cliente:", err);
+      Swal.fire({
+        title: "Error",
+        text: "Hubo un error al actualizar la información del cliente.",
+        icon: "error",
+        confirmButtonText: "Cerrar"
+      });
     }
   };
+
 
   return (
     <>
@@ -176,68 +199,116 @@ export default function Perfil() {
             </div>
           </div>
           
-          {usuario.rol === "vendedor" && vendedorInfo && (
-            <div className="bg-[#232323] rounded-3xl shadow-2xl p-8 lg:p-10 text-white font-sans">
-              <h2 className="font-bold text-xl mb-6">Información De Tu Tienda</h2>
-              <hr className="my-4 border-t border-gray-700" />
+          {usuario.rol === "cliente" && clienteInfo && (
+              <div className="bg-[#232323] rounded-3xl shadow-2xl p-8 lg:p-10 text-white font-sans">
+                <h2 className="font-bold text-xl mb-6">Información De Cliente</h2>
+                <hr className="my-4 border-t border-gray-700" />
 
-              <form onSubmit={handleSubmitVendedor} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div>
-                  <label className="block text-lg font-semibold mb-1">Nombre de la Tienda</label>
-                  <div className="mt-3 relative rounded-md shadow-sm">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><FaStore className="h-5 w-5 text-gray-400" /></div>
-                    <input id="nombre_tienda" type="text" name="nombre_tienda" value={vendedorInfo.nombre_tienda} onChange={(e) => setVendedorInfo({ ...vendedorInfo, nombre_tienda: e.target.value })} placeholder="Nombre de la tienda" className="block w-full pl-10 pr-3 py-2 bg-[#161616] text-[#8A8AA0] rounded-xl border-gray-300 focus:ring-blue-500 focus:border-blue-500 transition duration-200 font-mono" />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-lg font-semibold mb-1">Teléfono de la Tienda</label>
-                  <div className="mt-3 relative rounded-md shadow-sm">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><FaPhone className="h-5 w-5 text-gray-400" /></div>
-                    <input id="telefono" type="text" name="telefono" value={vendedorInfo.telefono} onChange={(e) => setVendedorInfo({ ...vendedorInfo, telefono: e.target.value })} placeholder="Teléfono" className="block w-full pl-10 pr-3 py-2 bg-[#161616] text-[#8A8AA0] rounded-xl border-gray-300 focus:ring-blue-500 focus:border-blue-500 transition duration-200 font-mono
-" />
-                  </div>
-                </div>
-                <div className="lg:col-span-1">
-                  <label className="block text-lg font-semibold mb-1">Logo URL</label>
-                  <div className="mt-3 relative rounded-md shadow-sm">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><FaInfoCircle className="h-5 w-5 text-gray-400" /></div>
-                    <input id="logo" type="text" name="logo" value={vendedorInfo.logo} onChange={(e) => setVendedorInfo({ ...vendedorInfo, logo: e.target.value })} placeholder="URL del logo" className="block w-full pl-10 pr-3 py-2 bg-[#161616] text-[#8A8AA0] rounded-xl border-gray-300 focus:ring-blue-500 focus:border-blue-500 transition duration-200 font-mono" />
-                  </div>
-                </div>
-                <div className="lg:col-span-3">
-                  <label className="block text-lg font-semibold mb-1">banner URL</label>
-                  <div className="mt-3 relative rounded-md shadow-sm">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><FaInfoCircle className="h-5 w-5 text-gray-400" /></div>
-                    <input id="banner" type="text" name="banner" value={vendedorInfo.banner} onChange={(e) => setVendedorInfo({ ...vendedorInfo, banner: e.target.value })} placeholder="URL del logo" className="block w-full pl-10 pr-3 py-2 bg-[#161616] text-[#8A8AA0] rounded-xl border-gray-300 focus:ring-blue-500 focus:border-blue-500 transition duration-200 font-mono" />
-                  </div>
-                </div>
-                <div className="md:col-span-2 lg:col-span-3">
-                  <label className="block text-lg font-semibold mb-1">Descripción</label>
-                  <div className="mt-3"><textarea id="descripcion" name="descripcion" value={vendedorInfo.descripcion} onChange={(e) => setVendedorInfo({ ...vendedorInfo, descripcion: e.target.value })} placeholder="Descripción de tu tienda" rows="4" className="block w-full pl-6 pr-3 py-3 bg-[#161616] text-[#8A8AA0] rounded-xl border-gray-300 focus:ring-blue-500 focus:border-blue-500 transition duration-200 font-mono"></textarea></div>
-                  {vendedorInfo.logo && (
-                    <div className="mt-6 text-center">
-                      <h4 className="text-white font-semibold mb-2">Previsualización del Logo</h4>
-                      <img src={vendedorInfo.logo} alt="Logo de la tienda" className="mx-auto w-32 h-32 object-contain rounded-full shadow-lg border-4 border-gray-100" />
+                <form onSubmit={handleSubmitcliente} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div>
+                    <label className="block text-lg font-semibold mb-1">Nombre</label>
+                    <div className="mt-3 relative rounded-md shadow-sm">
+                      <input
+                        id="nombre"
+                        type="text"
+                        name="nombre"
+                        value={clienteInfo.nombre}
+                        onChange={(e) => setClienteInfo({ ...clienteInfo, nombre: e.target.value })}
+                        placeholder="Nombre"
+                        className="block w-full px-3 py-2 bg-[#161616] text-[#8A8AA0] rounded-xl border-gray-300 focus:ring-blue-500 focus:border-blue-500 transition duration-200 font-mono"
+                      />
                     </div>
-                  )}
-                </div>
-                <div className="md:col-span-2 lg:col-span-3">
-                  {vendedorInfo.banner && (
-                    <div className="mt-6 text-center">
-                      <h4 className="text-white font-semibold mb-2">Previsualización del banner</h4>
-                      <img src={vendedorInfo.banner} alt="Logo de la tienda" className="mx-auto w-32 h-32 object-contain rounded-full shadow-lg border-4 border-gray-100" />
+                  </div>
+
+                  <div>
+                    <label className="block text-lg font-semibold mb-1">Apellido</label>
+                    <div className="mt-3 relative rounded-md shadow-sm">
+                      <input
+                        id="apellido"
+                        type="text"
+                        name="apellido"
+                        value={clienteInfo.apellido}
+                        onChange={(e) => setClienteInfo({ ...clienteInfo, apellido: e.target.value })}
+                        placeholder="Apellido"
+                        className="block w-full px-3 py-2 bg-[#161616] text-[#8A8AA0] rounded-xl border-gray-300 focus:ring-blue-500 focus:border-blue-500 transition duration-200 font-mono"
+                      />
                     </div>
-                  )}
-                </div>
+                  </div>
 
-                <div className="md:col-span-2 lg:col-span-3 flex flex-col sm:flex-row gap-4 mt-6">
-                  <button type="submit" className="font-mono text-lg flex-1 w-full sm:w-auto bg-amber-500 text-white px-6 py-3 rounded-xl font-bold hover:bg-amber-400 transition duration-200 shadow-md cursor-pointer">Guardar Cambios de Vendedor</button>
-                </div>
-              </form>
-            </div>
-          )}
+                  <div>
+                    <label className="block text-lg font-semibold mb-1">Correo Electrónico</label>
+                    <div className="mt-3 relative rounded-md shadow-sm">
+                      <input
+                        id="email"
+                        type="email"
+                        name="email"
+                        value={clienteInfo.email}
+                        onChange={(e) => setClienteInfo({ ...clienteInfo, email: e.target.value })}
+                        placeholder="Correo Electrónico"
+                        className="block w-full px-3 py-2 bg-[#161616] text-[#8A8AA0] rounded-xl border-gray-300 focus:ring-blue-500 focus:border-blue-500 transition duration-200 font-mono"
+                      />
+                    </div>
+                  </div>
 
-          {/* --- SECCIÓN 'CONVIÉRTETE EN VENDEDOR' (AHORA DINÁMICA) --- */}
+                  <div>
+                    <label className="block text-lg font-semibold mb-1">Teléfono</label>
+                    <div className="mt-3 relative rounded-md shadow-sm">
+                      <input
+                        id="telefono"
+                        type="text"
+                        name="telefono"
+                        value={clienteInfo.telefono}
+                        onChange={(e) => setClienteInfo({ ...clienteInfo, telefono: e.target.value })}
+                        placeholder="Teléfono"
+                        className="block w-full px-3 py-2 bg-[#161616] text-[#8A8AA0] rounded-xl border-gray-300 focus:ring-blue-500 focus:border-blue-500 transition duration-200 font-mono"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="lg:col-span-3">
+                    <label className="block text-lg font-semibold mb-1">Dirección</label>
+                    <div className="mt-3 relative rounded-md shadow-sm">
+                      <input
+                        id="direccion"
+                        type="text"
+                        name="direccion"
+                        value={clienteInfo.direccion}
+                        onChange={(e) => setClienteInfo({ ...clienteInfo, direccion: e.target.value })}
+                        placeholder="Dirección"
+                        className="block w-full px-3 py-2 bg-[#161616] text-[#8A8AA0] rounded-xl border-gray-300 focus:ring-blue-500 focus:border-blue-500 transition duration-200 font-mono"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="lg:col-span-3">
+                    <label className="block text-lg font-semibold mb-1">Notas</label>
+                    <div className="mt-3">
+                      <textarea
+                        id="notas"
+                        name="notas"
+                        value={clienteInfo.notas}
+                        onChange={(e) => setClienteInfo({ ...clienteInfo, notas: e.target.value })}
+                        placeholder="Información adicional"
+                        rows="4"
+                        className="block w-full px-3 py-3 bg-[#161616] text-[#8A8AA0] rounded-xl border-gray-300 focus:ring-blue-500 focus:border-blue-500 transition duration-200 font-mono"
+                      ></textarea>
+                    </div>
+                  </div>
+
+                  <div className="md:col-span-2 lg:col-span-3 flex flex-col sm:flex-row gap-4 mt-6">
+                    <button
+                      type="submit"
+                      className="font-mono text-lg flex-1 w-full sm:w-auto bg-amber-500 text-white px-6 py-3 rounded-xl font-bold hover:bg-amber-400 transition duration-200 shadow-md cursor-pointer"
+                    >
+                      Guardar Cambios de Cliente
+                    </button>
+                  </div>
+                </form>
+              </div>
+            )}
+
+
+          {/* SECCIÓN 'CONVIÉRTETE EN CLIENTE' */}
           {usuario.rol === "usuario" && (
             <div className="rounded-3xl p-8 lg:p-12 text-center">
               <h2 className="text-white text-4xl md:text-5xl font-extrabold  bg-clip-text bg-gradient-to-r mb-4 tracking-tight">
