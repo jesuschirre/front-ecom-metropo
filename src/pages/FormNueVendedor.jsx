@@ -6,7 +6,6 @@ import Swal from "sweetalert2";
 
 // SVG Icons
 const HiUser = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-5.5-2.5a.5.5 0 01.5.5v1.25a.5.5 0 01-1 0V8.5a.5.5 0 01.5-.5zM10 13a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" /><path d="M10 2a8 8 0 018 8v.5c0 .28-.22.5-.5.5h-.75V11a.5.5 0 01-.5.5h-1a.5.5 0 01-.5-.5v-1.5h-5V11a.5.5 0 01-.5.5h-1a.5.5 0 01-.5-.5v-.5H3.5a.5.5 0 01-.5-.5V10a8 8 0 018-8zm-1 7a1 1 0 100-2 1 1 0 000 2z" /></svg>;
-const HiPlus = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 5a.75.75 0 01.75.75v3.5h3.5a.75.75 0 010 1.5h-3.5v3.5a.75.75 0 01-1.5 0v-3.5h-3.5a.75.75 0 010-1.5h3.5v-3.5A.75.75 0 0110 5z" clipRule="evenodd" /></svg>;
 const HiSearch = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.433 4.54l3.72 3.72a1 1 0 11-1.414 1.414l-3.72-3.72A7 7 0 012 9z" clipRule="evenodd" /></svg>;
 const HiOfficeBuilding = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 00-1 1H5a1 1 0 00-1 1V4zm4 4h4v3H8V8zm-2 5a.75.75 0 00-.75.75v.5a.75.75 0 001.5 0v-.5a.75.75 0 00-.75-.75zM8 15a.75.75 0 00-.75.75v.5a.75.75 0 001.5 0v-.5A.75.75 0 008 15zm4-2a.75.75 0 00-.75.75v.5a.75.75 0 001.5 0v-.5a.75.75 0 00-.75-.75z" clipRule="evenodd" /></svg>;
 const HiMail = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/></svg>;
@@ -186,7 +185,7 @@ export default function App() {
           icon: "warning",
           title: "Límite alcanzado",
           text: `Solo puedes seleccionar ${nrodiasEscogidos} días de emisión.`,
-          confirmButtonColor: "#0ea5e9", // azul estilo Tailwind sky-500
+          confirmButtonColor: "#0ea5e9",
           confirmButtonText: "Entendido",
         });
 
