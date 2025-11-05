@@ -39,7 +39,6 @@ export default function Home() {
       });
       return;
     }
-
     // Si está logueado, lo lleva al formulario
     navigate("/FormNvend");
   };
