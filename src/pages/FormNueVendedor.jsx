@@ -447,7 +447,6 @@ export default function App() {
                         </div>
                     </FieldGroup>
 
-
                     {/* 3. DETALLES DEL CONTRATO */}
                     <FieldGroup title="3. Detalles del Contrato y Publicidad">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
