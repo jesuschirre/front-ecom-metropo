@@ -11,7 +11,6 @@ export default function Home() {
   const [planes, setPlanes] = useState([]);
   const [loadingPlanes, setLoadingPlanes] = useState(true);
   
-  console.log(usuario)
   const navigate = useNavigate(); // Hook para navegar
 
   useEffect(() => {
@@ -78,7 +77,7 @@ export default function Home() {
         {/* --- POR QUÉ ANUNCIAR --- */}
         <div className="flex flex-col items-center justify-center bg-white p-10">
           <h2 className="text-3xl md:text-4xl font-bold text-amber-500 text-center mb-8">
-            ¿POR QUÉ ANUNCIAR EN IMPULSA TU <br /> MARCA DEL GRUPO RPP?
+            ¿POR QUÉ ANUNCIAR EN METROPOLI IMPULSA TU <br /> MARCA?
           </h2>
 
           <div className="relative bg-white border border-black shadow-md px-6 py-6 max-w-3xl text-center">
@@ -112,12 +111,6 @@ export default function Home() {
                     key={plan.id}
                     className="bg-black relative shadow-2xl p-10 flex flex-col items-center scale-[1.05] transition duration-300 transform hover:-translate-y-2"
                   >
-                    {plan.destacado && (
-                      <span className="absolute top-0 right-0 -mt-4 mr-4 bg-amber-500 text-white text-xs font-bold px-4 py-2 rounded-full uppercase tracking-wide shadow-lg">
-                        Popular
-                      </span>
-                    )}
-
                     <h3
                       className={`font-bold mb-2 ${
                         plan.destacado

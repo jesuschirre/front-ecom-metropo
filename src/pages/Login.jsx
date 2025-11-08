@@ -20,7 +20,7 @@ export default function Login() {
       const data = await response.json();
       if (response.ok) {
         login(
-          { id: data.id, nombre: data.nombre, correo: data.correo, rol: data.rol },
+          { id: data.user.id, nombre: data.user.nombre, correo: data.user.correo, rol: data.user.rol },
           data.token
         );
         navigate("/");

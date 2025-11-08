@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { FaCheckCircle, FaUserCircle, FaStore, FaEnvelope, FaTag, FaInfoCircle, FaPhone } from 'react-icons/fa';
+import { FaCheckCircle, FaUserCircle, FaEnvelope, FaTag, FaPhone } from 'react-icons/fa';
 import Swal from "sweetalert2";
 
 
@@ -124,26 +124,6 @@ export default function Perfil() {
   return (
     <>
       <div className="min-h-screen bg-gradient-to-br py-7 px-4 sm:px-6 lg:px-8">
-
-          <div className="font-[Sora] max-w-7xl mx-auto bg-[#232323] rounded-2xl mb-10 lg:p-7">
-                <h1 className="font-bold text-xl mb-6 font-sans">Edita Tu Avatar</h1>
-                <hr className="my-4 border-t border-gray-700" />
-                <div className="flex gap-6">
-                  <div className="w-32 h-32 bg-gray-200 rounded-full flex items-center justify-center mb-4 border-4 border-gray-300">
-                    <span className="text-gray-500 text-sm select-none font-mono">Sin imagen</span>
-                  </div>
-                  <div className="p-6  ">
-                    <h1 className="text-xl font-bold text-white mb-4 font-sans">Agrega un nuevo avatar</h1>
-                    <button
-                      className="cursor-pointer font-mono flex items-center bg-amber-500 font-semibold px-4 py-2 rounded-md hover:bg-amber-400 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-amber-400"
-                      type="button"
-                    >
-                      Subir o cambiar foto
-                    </button>
-                    <p className="mt-3 text-white text-base font-mono italic">No hay archivos</p>
-                  </div>                  
-                </div>  
-          </div>
           <div className="max-w-7xl mx-auto space-y-12">
            <div className="bg-[#232323] text-white rounded-3xl shadow-2xl p-8 lg:p-10 font-sans">
             <h1 className="font-bold text-xl mb-6  ">Edita Tu Perfil</h1>

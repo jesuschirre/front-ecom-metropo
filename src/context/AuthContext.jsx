@@ -39,7 +39,7 @@ export function AuthProvider({ children }) {
 
       if (decoded.exp * 1000 < Date.now()) {
         logout();
-        navigate("/login");
+        navigate("/");
       } else {
         // Limpia timeout previo si existe
         if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -47,7 +47,7 @@ export function AuthProvider({ children }) {
         const tiempoRestante = decoded.exp * 1000 - Date.now();
         timeoutRef.current = setTimeout(() => {
           logout();
-          navigate("/login");
+          navigate("/");
         }, tiempoRestante);
       }
     } catch (e) {
