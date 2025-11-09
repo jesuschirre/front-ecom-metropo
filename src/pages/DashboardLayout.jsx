@@ -13,6 +13,18 @@ const DashboardLayout = () => {
         </a>
         <nav className="flex flex-col gap-4">
           <NavLink
+            to="/dashboard/Perfil"
+            className={({ isActive }) =>
+              `block px-4 py-2 rounded-md text-lg font-medium transition-colors duration-200 ${
+                isActive
+                  ? "bg-blue-100 text-amber-600 font-semibold shadow"
+                  : "hover:bg-blue-50 hover:text-amber-500"
+              }`
+            }
+          >
+            Perfil
+          </NavLink>
+          <NavLink
             to="/dashboard"
             end
             className={({ isActive }) =>
@@ -25,24 +37,11 @@ const DashboardLayout = () => {
           >
             Panel Principal
           </NavLink>
-          <NavLink
-            to="/dashboard/Perfil"
-            className={({ isActive }) =>
-              `block px-4 py-2 rounded-md text-lg font-medium transition-colors duration-200 ${
-                isActive
-                  ? "bg-blue-100 text-amber-600 font-semibold shadow"
-                  : "hover:bg-blue-50 hover:text-amber-500"
-              }`
-            }
-          >
-            Perfil
-          </NavLink>
         </nav>
       </aside>
 
       <main className="flex-1 p-8 bg-black ml-64">
         <header className="mb-6 border-b border-gray-300 pb-4">
-          <h1 className="text-3xl font-semibol">Dashboard</h1>
         </header>
         <Outlet /> {/* Aquí renderizan las rutas hijas */}
       </main>

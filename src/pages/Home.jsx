@@ -38,9 +38,14 @@ export default function Home() {
       });
       return;
     }
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth" // hace un desplazamiento suave
+    });
     // Si está logueado, lo lleva al formulario
     navigate("/FormNvend");
   };
+  
 
   return (
     <>
