@@ -35,7 +35,7 @@ const DashboardLayout = () => {
               }`
             }
           >
-            Panel Principal
+            Tus Contratos
           </NavLink>
         </nav>
       </aside>

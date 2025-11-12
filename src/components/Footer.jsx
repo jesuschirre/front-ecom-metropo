@@ -9,24 +9,24 @@ export default function Footer() {
               La voz de tu comunidad. Anuncia con nosotros y llega a miles.
             </p>
           </div>
-          <div>
-            <h4 className="font-bold mb-4">Enlaces Rápidos</h4>
-            <ul className="space-y-2">
-              <li>
-                <a href="#contacto" className="text-gray-300 hover:text-white">
-                  Contacto
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://www.metropoliradio.com/"
-                  className="text-gray-300 hover:text-white"
-                >
-                  Escuchar En Vivo
-                </a>
-              </li>
-            </ul>
-          </div>
+       <div>
+          <h4 className="font-bold mb-4">Enlaces Rápidos</h4>
+          <ul className="space-y-2">
+            <li>
+              <a href="#contacto" className="text-gray-300 hover:text-white">
+                Contacto
+              </a>
+            </li>
+            <li>
+              <a
+                onClick={() => window.open("https://www.metropoliradio.com/", "_blank")}
+                className="text-gray-300 hover:text-white cursor-pointer"
+              >
+                Escuchar En Vivo
+              </a>
+            </li>
+          </ul>
+        </div>
           <div>
             <h4 className="font-bold mb-4">Síguenos</h4>
             <div className="flex space-x-4">

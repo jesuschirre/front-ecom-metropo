@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { FaStoreAlt } from "react-icons/fa";
 import { FaUserCircle } from "react-icons/fa";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { DrawerCellPhone } from "./DrawerCellphone";
@@ -14,8 +13,7 @@ export default function Header() {
   const openDrawer = () => setIsDrawerOpen(true);       
   const closeDrawer = () => setIsDrawerOpen(false);         
 
-
-
+  
   return (
     <>
       <header className="fixed top-0 left-0 w-full z-50 flex justify-between text-white p-4 lg:px-20 bg-black shadow-md">
@@ -38,7 +36,7 @@ export default function Header() {
                 {usuario ? (
                   <>
                     <Link 
-                      to="/dashboard"
+                      to="/dashboard/Perfil"
                       className="flex items-center gap-2 bg-gray-900 px-3 py-1.5 rounded-lg text-white hover:bg-gray-800 transition"
                     >
                       <FaUserCircle className="text-3xl text-blue-400" />
@@ -73,7 +71,6 @@ export default function Header() {
           </div>
         </div>
       </header>
-
       {/* Drawer celular (Sidebar derecho móvil) */}
       <DrawerCellPhone isOpen={isDrawerOpen} onClose={closeDrawer} user={usuario}/>
     </>
