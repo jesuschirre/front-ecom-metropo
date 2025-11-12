@@ -8,14 +8,12 @@ export default function DashboardHome() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // 🧠 Esperar a que el usuario esté disponible antes de ejecutar la consulta
+    // Esperar a que el usuario esté disponible antes de ejecutar la consulta
     if (!usuario || !usuario.id) return;
     const fetchData = async () => {
       try {
         const respuesta = await fetch(`http://localhost:3000/users/contra_usu/${usuario.id}`);
         const data = await respuesta.json();
-
-        console.log("Respuesta del backend:", data);
 
         if (Array.isArray(data.contratos)) {
           setContratos(data.contratos);

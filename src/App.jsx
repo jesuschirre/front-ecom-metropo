@@ -7,6 +7,7 @@ import FormNueVendedor from "./pages/FormNueVendedor";
 import DashboardLayout from "./pages/DashboardLayout";
 import DashboardHome from "./pages/dashboard/DashboardHome";
 import Perfil from "./pages/dashboard/Perfil";
+import Tickets from "./pages/dashboard/Tickets";
 function App() {
   return (
     <AuthProvider>
@@ -22,6 +23,8 @@ function App() {
           <Route index element={<DashboardHome />} />  {/* /dashboard */}
             {/* ruta perfil */}
           <Route path="Perfil" element={<Perfil/>}/>
+            {/* ruta tikets */}
+          <Route path="Tickets" element={<Tickets/>}/>
         </Route>
 
       </Routes>

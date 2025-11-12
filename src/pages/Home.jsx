@@ -10,7 +10,6 @@ export default function Home() {
   const { usuario } = useAuth();
   const [planes, setPlanes] = useState([]);
   const [loadingPlanes, setLoadingPlanes] = useState(true);
-  
   const navigate = useNavigate(); // Hook para navegar
 
   useEffect(() => {

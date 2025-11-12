@@ -72,7 +72,7 @@ export function AuthProvider({ children }) {
   );
 }
 
-// 👇 Hook separado (export function en vez de const) → evita error de Vite
+// Hook separado (export function en vez de const) → evita error de Vite
 export function useAuth() {
   return useContext(AuthContext);
 }

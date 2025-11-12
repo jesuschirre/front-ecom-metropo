@@ -37,6 +37,19 @@ const DashboardLayout = () => {
           >
             Tus Contratos
           </NavLink>
+          <NavLink
+            to="/dashboard/Tickets"
+            end
+            className={({ isActive }) =>
+              `block px-4 py-2 rounded-md text-lg font-medium transition-colors duration-200 ${
+                isActive
+                  ? "bg-blue-100 text-amber-600 font-semibold shadow"
+                  : "hover:bg-blue-50 hover:text-amber-500"
+              }`
+            }
+          >
+            Soporte Tecnico
+          </NavLink>
         </nav>
       </aside>
 
