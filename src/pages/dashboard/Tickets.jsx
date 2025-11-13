@@ -1,16 +1,17 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
+import DataTable from "react-data-table-component";
 import Swal from "sweetalert2";
 
 export default function Tickets() {
   const { usuario } = useAuth();
-
   const [formData, setFormData] = useState({
     cliente_id: null,
     asunto: "",
     categoria: "",
   });
-
+  const [ tickets, setTickets ] = useState([])
+  console.log(tickets)
   // Esperar a que usuario esté disponible
   useEffect(() => {
     if (usuario && usuario.id) {
@@ -20,9 +21,53 @@ export default function Tickets() {
       }));
     }
   }, [usuario]); 
-
-
   const [showModal, setShowModal] = useState(false);
+
+  useEffect(() => {
+    if (usuario == null || !usuario.id) return;
+    const fetchTickets = async () => {
+      try {
+        const res = await fetch(`http://localhost:3000/tickets/${usuario.id}`);
+        const data = await res.json();
+        setTickets(data);
+      } catch (error) {
+        console.error("Error al obtener tickets:", error);
+      }
+    };
+    fetchTickets();
+  }, [usuario]);
+
+  const columnas = [
+    { name: "asunto", selector: row => row.asunto, sortable: true },
+    { 
+    name: "Estado", 
+      sortable: true,
+      cell: (row) => {
+        let color = "";
+        switch (row.estado) {
+          case "Abierto":
+            color = "bg-green-600 text-white";
+            break;
+          case "En_Proceso":
+            color = "bg-yellow-500 text-black";
+            break;
+          case "Resuelto":
+            color = "bg-red-600 text-white";
+            break;
+          default:
+            color = "bg-gray-500 text-white";
+        }
+        return (
+          <span className={`px-3 py-1 rounded-full text-sm font-semibold ${color}`}>
+            {row.estado || "N/A"}
+          </span>
+        );
+      },
+    },
+    { name: "prioridad", selector: row => row.prioridad || "N/A" },
+    { name: "fecha creación", selector: row => row.fecha_creacion || "N/A" },
+    { name: "mensaje remitente", selector: row => row.mensaje_remitente || "N/A" }
+  ]
 
   const handleChange = (e) => {
     setFormData({
@@ -30,10 +75,7 @@ export default function Tickets() {
       [e.target.name]: e.target.value,
     });
   };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
+  const handleSubmit = async () => {
     try {
       const res = await fetch("http://localhost:3000/tickets", {
         method: "POST",
@@ -54,7 +96,6 @@ export default function Tickets() {
           showConfirmButton: false,
         });
 
-        // Reiniciar formulario y cerrar modal
         setFormData({
           cliente_id: usuario.id,
           asunto: "",
@@ -81,14 +122,25 @@ export default function Tickets() {
   };
 
 return (
-  <div className="relative flex flex-col items-end w-full  bg-black h-screen">
+  <div className="">
     {/* Botón para abrir el modal */}
     <button
       onClick={() => setShowModal(true)}
-      className="text-lg bg-amber-500 text-white px-6 py-3 rounded-xl font-bold hover:bg-amber-400 transition duration-200 shadow-md cursor-pointer"
+      className="text-lg bg-amber-500 text-white px-3 py-3 rounded-xl font-bold hover:bg-amber-400 transition duration-200 shadow-md cursor-pointer"
     >
       Crear un nuevo ticket
     </button>
+    <div className="p-6">
+      <div className="bg-white rounded-2xl p-4 shadow-md">
+        <DataTable
+          title="Tickets del usuario"
+          columns={columnas}
+          data={tickets}
+          pagination
+          highlightOnHover
+        />
+      </div>
+    </div>
 
     {/* Modal dentro del contenido (no cubre sidebar) */}
     {showModal && (
@@ -120,7 +172,6 @@ return (
                 required
               />
             </div>
-
             {/* Categoría */}
             <div>
               <label className="block text-lg font-semibold mb-1">Categoría</label>
