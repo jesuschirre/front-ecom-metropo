@@ -52,12 +52,12 @@ export default function Header() {
                 ) : (
                   <>
                     <div className="hidden md:flex gap-2 pl-2">
-                      <button className="bg-amber-200 text-black px-3 py-2 rounded hover:bg-yellow-400 font-mono cursor-pointer">
-                        <a href="/login">Iniciar sesión</a>
-                      </button>
-                      <button className="bg-green-500 text-black px-3 py-2 rounded hover:bg-green-600 font-mono cursor-pointer">
-                        <a href="/registro">Registrarse</a>
-                      </button>
+                      <Link className="bg-amber-200 text-black px-3 py-2 rounded hover:bg-yellow-400 font-mono cursor-pointer" to="/login">
+                        Iniciar sesión
+                      </Link>
+                      <Link className="bg-green-500 text-black px-3 py-2 rounded hover:bg-green-600 font-mono cursor-pointer" to="/registro">
+                        Registrarse
+                      </Link>
                     </div>
 
                     {/* Icono hamburguesa para móvil */}

@@ -1,13 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { useAuth } from "../context/AuthContext";
 import Swal from "sweetalert2";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-
-// SVG Icon buscar
-const HiSearch = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.433 4.54l3.72 3.72a1 1 0 11-1.414 1.414l-3.72-3.72A7 7 0 012 9z" clipRule="evenodd" /></svg>;
 
 const DIAS_SEMANA = [
     { value: 'lunes', label: 'Lunes' },
@@ -30,58 +27,14 @@ const FieldGroup = ({ title, children }) => (
 // Main Component
 export default function App() {
     const { usuario } = useAuth();
-    
-    // --- MOCK API CALLS ---
-    const buscarClientePorDocumento = async (documento) => {
-    try {
-        if (!documento || (documento.length !== 8 && documento.length !== 11)) {
-        throw new Error("Ingrese un DNI (8 dígitos) o un RUC (11 dígitos).");
-        }
-
-        const response = await fetch(`http://localhost:3000/api/consultas_admin/documento/${documento}`);
-        const data = await response.json();
-
-        if (!response.ok) {
-        throw new Error(data.error || "No se encontró información del documento.");
-        }
-
-        // Estandarizamos los datos que vienen del backend
-        return {
-        nombreCompleto: data.nombreCompleto,
-        direccion: data.direccion || "",
-        documento: data.documento,
-        tipo: data.tipo,
-        correo: "", // lo puedes dejar vacío o llenar manualmente
-        };
-    } catch (error) {
-        console.error("Error en búsqueda de cliente:", error.message);
-        Swal.fire({
-        icon: "error",
-        title: "Error al buscar",
-        text: error.message,
-        confirmButtonColor: "#0ea5e9",
-        });
-        throw error;
-    }
-    };
-    
     // --- ESTADOS DEL FORMULARIO ---
-    const [cliente, setCliente] = useState({
-        nombre: '',
-        dni: '',
-        direccion: '',
-        correo: '',
-    });
-    const [documento, setDocumento] = useState('');
-    const [buscandoDoc, setBuscandoDoc] = useState(false);
-    const [docError, setDocError] = useState('');
 
     const [planes, setPlanes] = useState([]); 
     const [planSeleccionado, setPlanSeleccionado] = useState(null);
 
     // ESTADOS DE LA TABLA 'contrato_publicidad'
     const [nombreCampana, setNombreCampana] = useState(''); 
-    const [fechaInicio, setFechaInicio] = useState(''); 
+    const [fechaInicio, setFechaInicio] = useState(""); 
     const [tipoContrato, setTipoContrato] = useState('inicial'); 
     const [detallesAnuncio, setDetallesAnuncio] = useState(''); 
     const [anunciosPorDia, setAnunciosPorDia] = useState(0); 
@@ -92,6 +45,15 @@ export default function App() {
     
     const [metodoPago, setMetodoPago] = useState(''); 
     const [comprobante, setComprobante] = useState(null); 
+    const [audioAnuncio, setAudioAnuncio] = useState(null);
+    const audioRef = useRef(null);
+
+    
+     const cargarAudio = (e) => {
+      const archivo = e.target.files[0];
+      setAudioAnuncio(archivo); // guarda el audio en el estado
+    };
+
 
     // Fecha mínima = 3 días después de hoy
     const fechaMinima = new Date();
@@ -133,43 +95,6 @@ export default function App() {
 
     const descuento = '0.00'; // Descuento fijo en cero, como lo solicita el usuario
     
-    // --- HANDLERS DE FORMULARIO ---
-
-    const handleChangeCliente = (e) => {
-        const { name, value } = e.target;
-        setCliente(prev => ({ ...prev, [name]: value }));
-    };
-
-    const handleBuscarDocumento = async () => {
-        if (!documento.trim()) {
-            setDocError('Por favor ingresa un número de documento.');
-            return;
-        }
-
-        setBuscandoDoc(true);
-        setDocError('');
-        
-        try {
-            const data = await buscarClientePorDocumento(documento);
-
-            // Autocompletar campos del cliente
-            setCliente({
-                id: data.clienteId, 
-                nombre: data.nombreCompleto || '',
-                dni: documento,
-                direccion: data.direccion || '',
-                correo: data.correo || cliente.correo, 
-            });
-            setDocError(''); 
-            
-        } catch (error) {
-            console.error('Error al buscar documento:', error);
-            setDocError(error.message || 'Error al consultar el documento.');
-            setCliente({ id: null, nombre: '', dni: documento, direccion: '', correo: '' });
-        } finally {
-            setBuscandoDoc(false);
-        }
-    };
     
     // Maneja la selección de días
     const handleDiaEmisionChange = (day) => {
@@ -222,126 +147,99 @@ export default function App() {
         setComprobante(uploadedImageURL.url)
     }
 
-    const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    if (!planSeleccionado) {
+  if (!planSeleccionado) {
+    Swal.fire({ icon: "warning", title: "Plan no seleccionado", text: "Debe seleccionar un plan antes de continuar." });
+    return;
+  }
+
+  if (diasEmision.length === 0) {
+    Swal.fire({ icon: "warning", title: "Días de emisión faltantes", text: "Debe seleccionar al menos un día." });
+    return;
+  }
+
+  if (!usuario.id) {
+    Swal.fire({ icon: "error", title: "Cliente no válido", text: "Debe seleccionar un cliente válido." });
+    return;
+  }
+
+  if (!comprobante) {
+    Swal.fire({ icon: "info", title: "Comprobante requerido", text: "Debe cargar un comprobante antes de continuar." });
+    return;
+  }
+
+  // FORM DATA
+  const formData = new FormData();
+  formData.append("cliente_id", usuario.id);
+  formData.append("nombre_campana", nombreCampana);
+  formData.append("plan_id", planSeleccionado.id);
+  formData.append("fecha_inicio", fechaInicio);
+  formData.append("monto_acordado", MontoAcordado);
+  formData.append("tipo_contrato", tipoContrato);  
+  formData.append("detalles_anuncio", detallesAnuncio);
+  formData.append("precio_base", Precio_base);
+  formData.append("descuento", descuento);
+  formData.append("metodo_pago", metodoPago);
+
+  //  Días de emisión como JSON
+  formData.append("dias_emision", JSON.stringify(diasEmision));
+
+  // Anuncios por día
+  formData.append("anuncios_por_dia", anunciosPorDia);
+
+  // ARCHIVOS
+  formData.append("comprobante_pago", comprobante);
+  formData.append("audio_anuncio", audioAnuncio);
+
+  try {
+    const apiUrl = "http://localhost:3000/api/contratosySoli/soliCon";
+
+    const response = await fetch(apiUrl, {
+      method: "POST",
+      body: formData, 
+    });
+
+    const result = await response.json();
+
+    if (response.ok) {
       Swal.fire({
-        icon: "warning",
-        title: "Plan no seleccionado",
-        text: "Debe seleccionar un plan antes de continuar.",
-        confirmButtonColor: "#3085d6",
+        icon: "success",
+        title: "Contrato creado",
+        text: result.message || "El contrato fue registrado con éxito.",
       });
-      return;
-    }
-
-    if (diasEmision.length === 0) {
-      Swal.fire({
-        icon: "warning",
-        title: "Días de emisión faltantes",
-        text: "Debe seleccionar al menos un día de emisión.",
-        confirmButtonColor: "#3085d6",
-      });
-      return;
-    }
-
-    if (!usuario.id) {
-      Swal.fire({
-        icon: "error",
-        title: "Cliente no válido",
-        text: "Debe buscar y seleccionar un cliente válido.",
-        confirmButtonColor: "#d33",
-      });
-      return;
-    }
-
-    if (!comprobante) {
-      Swal.fire({
-        icon: "info",
-        title: "Comprobante requerido",
-        text: "Debe cargar un comprobante de pago antes de continuar.",
-        confirmButtonColor: "#3085d6",
-      });
-      return;
-    }
-
-    const datosFormulario = {
-      cliente_id: usuario.id,
-      nombre_campana: nombreCampana,
-      plan_id: planSeleccionado.id,
-      fecha_inicio: fechaInicio,
-      monto_acordado: MontoAcordado,
-      tipo_contrato: tipoContrato,
-      contrato_padre_id: null,
-      detalles_anuncio: detallesAnuncio,
-      tags: null,
-      precio_base: Precio_base,
-      descuento: descuento,
-      dias_emision: diasEmision,
-      anuncios_por_dia: anunciosPorDia,
-      metodo_pago: metodoPago,
-      comprobante_pago: comprobante,
-    };
-
-    try {
-      console.log("Datos del Contrato Final:", datosFormulario);
-      const apiUrl = "http://localhost:3000/api/contratosySoli/soliCon";
-      const response = await fetch(apiUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(datosFormulario),
-      });
-
-      const result = await response.json();
-
-      if (response.ok) {
-        Swal.fire({
-          icon: "success",
-          title: "Contrato creado",
-          text: result.message || "El contrato publicitario fue registrado con éxito.",
-          confirmButtonColor: "#28a745",
-        });
-        console.log("Respuesta del servidor:", result);
-      } else {
-        Swal.fire({
-          icon: "error",
-          title: "Error al registrar",
-          text: result.message || "Ocurrió un problema al guardar el contrato.",
-          confirmButtonColor: "#d33",
-        });
-        console.error("Error al enviar:", result);
-      }
-    } catch (error) {
-      console.error("Error de conexión:", error.message);
+    } else {
       Swal.fire({
         icon: "error",
-        title: "Error de conexión",
-        text: `No se pudo conectar al servidor. ${error.message}`,
-        confirmButtonColor: "#d33",
+        title: "Error al registrar",
+        text: result.message || "Ocurrió un problema.",
       });
-    } finally {
-         setCliente({
-            nombre: '',
-            dni: '',
-            direccion: '',
-            correo: '',
-        });
-        setDocumento ('');
-        setPlanSeleccionado (null);
-        setNombreCampana(''); 
-        setFechaInicio(''); 
-        setTipoContrato ('inicial'); 
-        setDetallesAnuncio(''); 
-        setAnunciosPorDia(0); 
-        setDiasEmision ([]); 
-        setNrodiasEscogidos (0)
-        setMonto_acordado([]);
-        setPrecio_base([]);
-        setMetodoPago(''); 
-        setComprobante(null); 
-        }
-    };
-
+    }
+  } catch (error) {
+    Swal.fire({
+      icon: "error",
+      title: "Error de conexión",
+      text: `No se pudo conectar. ${error.message}`,
+    });
+  } finally {
+    // Limpieza del formulario
+    setPlanSeleccionado(null);
+    setNombreCampana('');
+    setFechaInicio('');
+    setTipoContrato('inicial');
+    setDetallesAnuncio('');
+    setAnunciosPorDia(0);
+    setDiasEmision([]);
+    setNrodiasEscogidos(0);
+    setMonto_acordado([]);
+    setPrecio_base([]);
+    setMetodoPago('');
+    setComprobante(null);
+    setAudioAnuncio(null);
+    audioRef.current.value = "";
+  }
+};
 
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col font-inter">
@@ -353,7 +251,6 @@ export default function App() {
                 </h1>
                 
                 <form onSubmit={handleSubmit} className="space-y-8">
-                    {/* 2. SELECCIÓN DE PLAN (plan_id, precio_base) */}
                     <FieldGroup title="1. Seleccione un Plan">
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             {planes.length > 0 && planes
@@ -413,27 +310,31 @@ export default function App() {
                                     required
                                 >
                                     <option value="inicial">Inicial</option>
-                                    <option value="renovacion">Renovación</option>
                                 </select>
                             </div>
 
                             {/* Fecha Inicio */}
-                            <div className='gap-3' >
-                                <label className="flex items-center text-sm font-semibold text-gray-700">
-                                     Fecha de Inicio
-                                </label>
+                            <div className="gap-3">
+                              <label className="flex items-center text-sm font-semibold text-gray-700">
+                                Fecha de Inicio
+                              </label>
 
-                                <div className="relative">
-                                    <DatePicker
-                                    selected={fechaInicio}
-                                    onChange={(date) => setFechaInicio(date)}
-                                    minDate={fechaMinima} // 👈 Bloquea hasta 3 días después de hoy
-                                    dateFormat="yyyy-MM-dd"
-                                    placeholderText="Selecciona una fecha"
-                                    className="w-full rounded-xl border border-gray-300 bg-white p-3 text-gray-700 shadow-sm  focus:ring-offset-1 transition-all duration-150 ease-in-out"
-                                    popperClassName="rounded-lg shadow-lg border border-gray-200 bg-white"
-                                    />
-                                </div>
+                              <div className="relative">
+                                <DatePicker
+                                  selected={fechaInicio ? new Date(fechaInicio) : null}
+                                  onChange={(date) => {
+                                    if (date) {
+                                      const formato = date.toISOString().slice(0, 10); // YYYY-MM-DD
+                                      setFechaInicio(formato); 
+                                    }
+                                  }}
+                                  minDate={fechaMinima}
+                                  dateFormat="yyyy-MM-dd"
+                                  placeholderText="Selecciona una fecha"
+                                  className="w-full rounded-xl border border-gray-300 bg-white p-3 text-gray-700 shadow-sm focus:ring-offset-1 transition-all duration-150 ease-in-out"
+                                  popperClassName="rounded-lg shadow-lg border border-gray-200 bg-white"
+                                />
+                              </div>
                             </div>
                             
                             {/* Detalles Anuncio */}
@@ -450,7 +351,24 @@ export default function App() {
                                     className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 p-2.5"
                                 ></textarea>
                             </div>
+                            {/* Subir Audio */}
+                            <div className="md:col-span-2 mt-2">
+                              <label htmlFor="audio_anuncio" className="block text-sm font-medium text-gray-700">
+                                Adjuntar Audio (Opcional)
+                              </label>
 
+                              <input
+                                type="file"
+                                id="audio_anuncio"
+                                name="audio_anuncio"
+                                accept="audio/*"   
+                                onChange={cargarAudio}
+                                ref={audioRef}
+                                className="mt-1 block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer
+                                          bg-gray-50 focus:outline-none file:bg-amber-600 file:text-white file:py-2 file:px-4 file:border-none
+                                          file:rounded-lg file:cursor-pointer hover:file:bg-amber-700"
+                              />
+                            </div>
                         </div>
                     </FieldGroup>
                     
@@ -563,6 +481,7 @@ export default function App() {
                                         type="file"
                                         id="comprobante"
                                         name="comprobante"
+                                        accept="image/*"
                                         onChange={cargarComprobante}
                                         required
                                         className="hidden"
