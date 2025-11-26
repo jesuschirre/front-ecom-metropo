@@ -14,7 +14,15 @@ export default function Registro() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+    // Validación
+    if (password.length < 8) {
+      return Swal.fire({
+        title: "Contraseña insegura",
+        text: "La contraseña debe tener al menos 8 caracteres.",
+        icon: "warning",
+        confirmButtonText: "Cerrar"
+      });
+    }
     if (nombre === "" || correo === "" || password === "") {
       Swal.fire({ 
         title: "Error", 
