@@ -1,3 +1,5 @@
+import { FaFacebook, FaInstagram, FaYoutube  } from "react-icons/fa";
+
 export default function Footer() {
   return (
     <footer className="bg-gray-950 text-gray-300 pt-10 relative">
@@ -31,22 +33,22 @@ export default function Footer() {
             <h4 className="font-bold mb-4">Síguenos</h4>
             <div className="flex space-x-4">
               <a
-                href="#"
-                className="text-gray-300 hover:text-white text-2xl"
+                onClick={() => window.open("https://www.facebook.com/metropoliradio.peru")}
+                className="text-gray-300 hover:text-white text-2xl cursor-pointer"
               >
-                <i className="fab fa-facebook"></i>
+                <FaFacebook />
               </a>
               <a
-                href="#"
-                className="text-gray-300 hover:text-white text-2xl"
+                onClick={() => window.open("https://www.instagram.com/metropoli.radio")}
+                className="text-gray-300 hover:text-white text-2xl cursor-pointer"
               >
-                <i className="fab fa-instagram"></i>
+                <FaInstagram />
               </a>
               <a
-                href="#"
-                className="text-gray-300 hover:text-white text-2xl"
+                onClick={() => window.open("https://www.youtube.com/@MetropoliRadio")}
+                className="text-gray-300 hover:text-white text-2xl cursor-pointer"
               >
-                <i className="fab fa-twitter"></i>
+                <FaYoutube />
               </a>
             </div>
           </div>

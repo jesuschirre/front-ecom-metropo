@@ -6,9 +6,8 @@ export default function Registro() {
   const [nombre, setNombre] = useState('');
   const [correo, setCorreo] = useState('');
   const [password, setPassword] = useState('');
-  
-  // --- NUEVOS ESTADOS PARA UNA MEJOR EXPERIENCIA DE USUARIO ---
-  const [loading, setLoading] = useState(false); // Para el estado de carga
+  // estado de carga
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
@@ -30,12 +29,9 @@ export default function Registro() {
         icon: "error", 
         confirmButtonText: "Cerrar" 
       });
-      return; // Importante: salimos de la función para no seguir con el fetch
+      return;
     }
-
-    // 1. Iniciar el estado de carga y limpiar mensajes anteriores
     setLoading(true);
-
     try {
       const response = await fetch('http://localhost:3000/users/register', {
         method: 'POST',
@@ -43,18 +39,15 @@ export default function Registro() {
         body: JSON.stringify({ nombre, correo, password })
       });
       const data = await response.json();
-
-      // Si la respuesta del servidor no es 'ok' (ej: error 409, 500), lanzamos un error
       if (!response.ok) {
         throw new Error(data.error || 'Ocurrió un error desconocido.');
       }else{
-        // 2. Si todo fue bien, mostramos el mensaje de éxito
         Swal.fire({ title: "¡Registro exitoso!", text: data.message, icon: "success", timer: 2000, showConfirmButton: false });
       }
-      // 3. Después de unos segundos, redirigimos al login para que el usuario pueda leer el mensaje
+      // Después de unos segundos, redirigimos al login para que el usuario pueda leer el mensaje
       setTimeout(() => {
         navigate("/login");
-      }, 4000); // 4 segundos de espera
+      }, 2000); // segundos de espera
 
     }catch (error) {
       Swal.fire({ 
@@ -65,7 +58,7 @@ export default function Registro() {
       });
     }
      finally {
-      // 5. Quitar el estado de carga, ya sea que la petición haya sido exitosa o fallida
+      // Quitar el estado de carga, ya sea que la petición haya sido exitosa o fallida
       setLoading(false);
     }
   };
@@ -83,7 +76,7 @@ export default function Registro() {
 
             <div className="mb-4">
               <label className="text-lg font-medium" htmlFor="nombre">
-                Nombre
+                Nombre Completo
               </label>
               <input 
                 id="nombre"
@@ -92,7 +85,7 @@ export default function Registro() {
                 value={nombre} 
                 onChange={(e) => setNombre(e.target.value)} 
                 className="w-full border-2 border-gray-100 rounded-2xl p-4 mt-1 bg-transparent"
-                disabled={loading} // Deshabilitado mientras carga
+                disabled={loading}
               />
             </div>
 
@@ -107,7 +100,7 @@ export default function Registro() {
                 value={correo} 
                 onChange={(e) => setCorreo(e.target.value)} 
                 className="w-full border-2 border-gray-100 rounded-2xl p-4 mt-1 bg-transparent"
-                disabled={loading} // Deshabilitado mientras carga
+                disabled={loading}
               />
             </div>
 
@@ -122,14 +115,14 @@ export default function Registro() {
                 value={password} 
                 onChange={(e) => setPassword(e.target.value)} 
                 className="w-full border-2 border-gray-100 rounded-2xl p-4 mt-1 bg-transparent"
-                disabled={loading} // Deshabilitado mientras carga
+                disabled={loading}
               />
             </div>
 
             <button 
               type="submit" 
               className="w-full bg-amber-400 rounded-xl text-white text-lg py-3 font-mono hover:bg-amber-500 transition cursor-pointer"
-              disabled={loading} // Deshabilitado mientras carga
+              disabled={loading}
             >
               {loading ? 'Registrando...' : 'Registrarse'}
             </button>

@@ -1,19 +1,8 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { FaUserCircle } from "react-icons/fa";
-import { GiHamburgerMenu } from "react-icons/gi";
-import { DrawerCellPhone } from "./DrawerCellphone";
-
 export default function Header() {
   const { usuario, logout } = useAuth();
-
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false); 
-
-  const openDrawer = () => setIsDrawerOpen(true);       
-  const closeDrawer = () => setIsDrawerOpen(false);         
-
-  
   return (
     <>
       <header className="fixed top-0 left-0 w-full z-50 flex justify-between text-white p-4 lg:px-20 bg-black shadow-md">
@@ -59,11 +48,6 @@ export default function Header() {
                         Registrarse
                       </Link>
                     </div>
-
-                    {/* Icono hamburguesa para móvil */}
-                    <div className="md:hidden cursor-pointer" onClick={openDrawer}>
-                      <GiHamburgerMenu className="text-3xl" />
-                    </div>
                   </>
                 )}
               </div>
@@ -71,8 +55,7 @@ export default function Header() {
           </div>
         </div>
       </header>
-      {/* Drawer celular (Sidebar derecho móvil) */}
-      <DrawerCellPhone isOpen={isDrawerOpen} onClose={closeDrawer} user={usuario}/>
+
     </>
   );
 }
